@@ -30,7 +30,7 @@ This is the primary script that combines multiple components and performs the re
     - `datasets`
     - `pandas`
     - `concurrent.futures`
-    - `beautifulsoup4` (optional)
+    - `beautifulsoup4` (needed to clean the extracted body of the question and answer text)
 
     To install the above packages please run the following command:
     ```
