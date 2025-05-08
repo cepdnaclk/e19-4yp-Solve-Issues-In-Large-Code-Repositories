@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 from langchain.embeddings import OpenAIEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
+from langchain_core.documents import Document
 
 repo_name = "scikit-learn"
 
@@ -185,11 +186,14 @@ def update(repo_path, latest_commit):
         if change_type == "D":  # Deleted file
             deleted_files.append(repo_path+parts[1])
     
-     
+    delete_ids_vc = []
     for file in deleted_files:
         if not file.endswith(".py"):
             continue
         delete_node_and_edges(graph, file)
+        id = file_ids[file]
+        delete_ids_vc.append(id)
+        vector_store.delete([id])
     checkout_commit(repo_path, latest_commit)    
     update_class_functions_file(added_files, graph) 
     
@@ -202,8 +206,23 @@ def update(repo_path, latest_commit):
         name = file.split("/")[-1].split(".")[0]
         # print(repo_path+file)
         insert_edge(graph, "module_"+name, file, relation="path", node_type_v="full_path", node_type_u="module_name")
-     
+    
+    documents_vc = [] 
+    id_vc = []
     for file_path in added_files:
+        with open(file_path, "r") as f:
+            content = f.read()
+        if sketch:
+            sketch = get_skeleton(content, keep_constant = False, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
+            doc = Document(page_content= sketch, metadata = {"filename": file_path})
+            if delete_ids_vc:
+                id = delete_ids_vc.pop(0)
+            else:
+                id = max(file_ids.values()) + 1
+            file_ids[file_path] = id
+            documents_vc.append(doc)
+            id_vc.append(id)
+        
         # print(file_path, "kk")
         if file_path in renamed_files:
             file_path = renamed_files[file_path]
@@ -217,8 +236,9 @@ def update(repo_path, latest_commit):
             if not i.endswith(".py"):
                 continue
             insert_edge(graph, file_path, i, relation="imports", node_type_v="full_path", node_type_u="full_path")
-               
-    remove_isolated_nodes(graph)            #     delete_edge(graph,current_file, i)
+    vector_store.add_documents(documents=documents_vc, ids=id_vc)
+    vector_store.save_local(f"{repo_name}_faiss_index")
+    remove_isolated_nodes(graph)         
     print(graph)
     save_graph(graph, f"new_graph_{repo_name}.pkl")
     # checkout_commit(repo_path, latest_commit)
