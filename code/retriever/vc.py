@@ -19,8 +19,9 @@ import os
 
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+load_dotenv()
 
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small", OPENAI_API_KEY=OPENAI_API_KEY)
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
 
 vector_store = FAISS(

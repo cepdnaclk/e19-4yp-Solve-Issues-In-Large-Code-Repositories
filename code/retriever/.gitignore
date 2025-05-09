@@ -1,2 +1,4 @@
 django
 .env
+django_faiss_index
+__pycache__
