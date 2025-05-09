@@ -218,7 +218,7 @@ def test_compress():
 
 def test_compress_var():
     print("LOC: ", len(code.split("\n")))
-    with open("test/django/django/db/transaction.py", "r", encoding="utf-8") as f:
+    with open("django/django/db/transaction.py", "r", encoding="utf-8") as f:
         raw_code = f.read()
     skeleton = get_skeleton(
         raw_code,
