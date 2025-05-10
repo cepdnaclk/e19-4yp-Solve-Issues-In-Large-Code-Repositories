@@ -8,6 +8,7 @@ ___________________________________________________________
 
 
 from pydantic import BaseModel, Field
+from typing import List
 class SuspiciousComponentOutput(BaseModel):
     """Identify most suspicious file name and class/function name related to the issue."""
     file: str = Field(..., description="The most suspicious file path related to the issue.")
@@ -31,4 +32,14 @@ class SuspiciousDirectoryOutput(BaseModel):
     suspicious_directory: str = Field(
         ...,
         description="The most suspicious directory likely containing the root cause of the issue."
+    )
+    
+class SuspiciousFileReason(BaseModel):
+    file: str = Field(..., description="The path to the suspicious file.")
+    reason: str = Field(..., description="The reasoning behind selecting this file as suspicious.")
+
+class SuspiciousFileReasoningOutput(BaseModel):
+    suspicious_files: List[SuspiciousFileReason] = Field(
+        ...,
+        description="A list of suspicious files with reasoning for each."
     )
