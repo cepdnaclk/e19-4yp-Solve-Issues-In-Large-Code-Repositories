@@ -1,3 +1,4 @@
+
 """
 * Author: Lahiru Menikdiwela
 * Email: lahirumenik@gmail.com
@@ -38,6 +39,9 @@ def build(name):
     for root,dir, files in os.walk(name):
         for file in files:
             if file.endswith(".py"):
+                full_name = root + "/" + file
+                if "tests" in full_name.split("/") or "test" in full_name.split("/"):
+                    continue
                 try:
                     with open(f"{root}/{file}", "r") as f:
                         content = f.read()
@@ -61,4 +65,5 @@ def build(name):
                     
 if __name__ == "__main__":
     build("django")
+
     
