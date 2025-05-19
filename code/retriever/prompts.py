@@ -133,7 +133,7 @@ suspicious_directory_prompt = ChatPromptTemplate.from_messages([
     - A list of directory paths from a GitHub repository
     - A problem description from a GitHub issue
 
-    Your task is to identify the **single most suspicious directory** where the issue is most likely originating from.
+    Your task is to identify the **single most suspicious directory** from the guven directory paths where the issue is most likely originating from.
 
     Instructions:
     - Analyze the problem description closely.
@@ -197,6 +197,41 @@ File Structure:
 {file_structure}
 
 
+'''
+    )
+])
+
+
+deep_reasoning_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are a highly intelligent assistant with deep expertise in software debugging. You evaluate how likely a given file is responsible for a
+        GitHub issue.
+        '''
+    ),
+    (
+        "human",
+        '''
+You are given a **GitHub issue description** and a list of **candidate files**, each with an associated reason for being suspected.
+note that it is expected to find the file which needs to modify to solve the problem description. high score file means the most possible 
+file which needs to modify to solve the problem description.
+
+Your task is to:
+- Carefully analyze the issue description.
+- Evaluate the strength of the reasoning for each file.
+- Provide a **confidence score out of 100** for each file based on how likely it is the root cause.
+- Justify each score with **detailed technical reasoning**.
+- Be critical — low confidence scores are valid if the reasoning or evidence is weak.
+
+Input:
+
+Problem Description:
+```{problem_description}```
+
+Candidate Files (with initial reasoning):
+```json
+{candidates}
+```
 '''
     )
 ])

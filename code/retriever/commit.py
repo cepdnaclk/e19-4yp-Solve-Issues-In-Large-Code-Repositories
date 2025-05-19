@@ -23,7 +23,6 @@ from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 
-repo_name = "scikit-learn"
 
 def neighbors_by_relation(G, node, relation_type):
     
@@ -147,11 +146,12 @@ def update(repo_path, latest_commit):
     load_dotenv()
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
     repo = git.Repo(repo_path)
-    repo_name = repo_path.split("/")[-2]
+    repo_name = repo_path #repo_path.split("/")[-2]
+    repo_path = repo_path+"/"
     file_ids = utils.deserialize_json_to_dict(f"{repo_name}_file_ids.json")
     print(repo_name)
     base_commit = repo.head.commit.hexsha  # Get the latest commit hash
-    graph = load_graph(f"../new_graph_{repo_name}.pkl")
+    graph = load_graph(f"graph_{repo_name}.pkl")
     print(graph)
     diff_index = repo.git.diff('--name-status', base_commit, latest_commit)
     vector_store = FAISS.load_local(
@@ -191,9 +191,12 @@ def update(repo_path, latest_commit):
         if not file.endswith(".py"):
             continue
         delete_node_and_edges(graph, file)
-        id = file_ids[file]
-        delete_ids_vc.append(id)
-        vector_store.delete([id])
+        if file in file_ids:
+            id = file_ids[file]
+            del file_ids[file]
+            delete_ids_vc.append(id)
+            vector_store.delete([id])
+    utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     checkout_commit(repo_path, latest_commit)    
     update_class_functions_file(added_files, graph) 
     
@@ -210,19 +213,23 @@ def update(repo_path, latest_commit):
     documents_vc = [] 
     id_vc = []
     for file_path in added_files:
-        with open(file_path, "r") as f:
-            content = f.read()
-        if sketch:
-            sketch = get_skeleton(content, keep_constant = False, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
-            doc = Document(page_content= sketch, metadata = {"filename": file_path})
-            if delete_ids_vc:
-                id = delete_ids_vc.pop(0)
-            else:
-                id = max(file_ids.values()) + 1
-            file_ids[file_path] = id
-            documents_vc.append(doc)
-            id_vc.append(id)
-        
+        if not file_path.endswith(".py"):
+            continue
+        try:
+            with open(file_path, "r") as f:
+                content = f.read()
+            if content:
+                sketch = get_skeleton(content, keep_constant = False, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
+                doc = Document(page_content= sketch, metadata = {"filename": file_path})
+                if delete_ids_vc:
+                    id = delete_ids_vc.pop(0)
+                else:
+                    id = max(file_ids.values()) + 1
+                file_ids[file_path] = id
+                documents_vc.append(doc)
+                id_vc.append(id)
+        except Exception as e:
+            print(f"[!] Error adding file '{file_path}': {e}")
         # print(file_path, "kk")
         if file_path in renamed_files:
             file_path = renamed_files[file_path]
@@ -236,11 +243,13 @@ def update(repo_path, latest_commit):
             if not i.endswith(".py"):
                 continue
             insert_edge(graph, file_path, i, relation="imports", node_type_v="full_path", node_type_u="full_path")
-    vector_store.add_documents(documents=documents_vc, ids=id_vc)
-    vector_store.save_local(f"{repo_name}_faiss_index")
+    if documents_vc and id_vc:
+        vector_store.add_documents(documents=documents_vc, ids=id_vc)
+        vector_store.save_local(f"{repo_name}_faiss_index")
+        utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     remove_isolated_nodes(graph)         
     print(graph)
-    save_graph(graph, f"new_graph_{repo_name}.pkl")
+    save_graph(graph, f"graph_{repo_name}.pkl")
     # checkout_commit(repo_path, latest_commit)
 
     return
@@ -248,4 +257,5 @@ repo_name = "django"
 repo_path = f"test/{repo_name}/"
 # ch, ren, ad, de, import_ch, import_dict, import_delete_dict = 
 # update(repo_path, "b34751b7ed02b2cfcc36037fb729d4360480a299")
-# checkout_commit("test/django", "66f9eb0ff1e7147406318c5ba609729678e4e6f6")
+# checkout_commit("django", "66f9eb0ff1e7147406318c5ba609729678e4e6f6")
+
