@@ -1,0 +1,541 @@
+[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ cp -r django testbed
+cp -r django testbed
+[?2004lcp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.pack': Permission denied
+cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.idx': Permission denied
+cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.rev': Permission denied
+[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ docker build -t django_4.1 /tmp/tmp2kijoqaf
+docker build -t django_4.1 /tmp/tmp2kijoqaf
+[?2004l[1A[1B[0G[?25l[+] Building 0.0s (0/0)  docker:desktop-linux
+[?25h[1A[0G[?25l[+] Building 0.0s (0/1)                                    docker:desktop-linux
+[?25h[1A[0G[?25l[+] Building 0.1s (1/1)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[?25h[1A[1A[1A[0G[?25l[+] Building 0.3s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.1s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 0.4s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.3s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 0.6s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.4s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 0.7s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.6s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 0.9s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.7s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.0s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         0.9s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.2s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.0s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.3s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.2s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.5s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.3s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.6s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.5s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.8s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.6s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 1.9s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.8s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.1s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         1.9s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.2s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.1s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.4s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.2s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.5s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.4s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.7s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.5s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 2.8s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.7s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 3.0s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         2.8s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 3.1s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         3.0s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 3.3s (1/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m => [internal] load metadata for docker.io/library/python:3.9-slim         3.1s
+[?25h[1A[1A[1A[1A[0G[?25l[+] Building 3.4s (2/2)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[?25h[1A[1A[1A[1A[0G[?25l[+] Building 3.5s (3/3)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[?25h[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 3.7s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.1s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 3.8s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.3s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.0s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.4s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.1s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.3s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.7s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.4s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          0.9s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.6s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.0s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.7s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.2s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 4.9s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.3s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.0s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.5s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.2s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.3s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.8s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.5s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          1.9s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.6s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.1s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.8s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.2s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 5.9s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.4s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.1s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.5s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.2s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.7s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.4s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          2.8s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.5s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.0s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.7s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.1s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 6.8s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.3s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.0s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.4s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.1s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.3s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.7s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.4s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          3.9s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.6s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.0s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.7s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.2s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 7.9s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.3s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.0s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.5s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.2s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.3s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.8s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.5s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          4.9s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.6s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.1s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.8s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.2s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 8.9s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.4s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.1s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.2s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.7s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.4s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          5.8s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.5s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.0s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.7s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.1s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 9.8s (5/7)                                    docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.3s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.0s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.4s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.1s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.6s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.3s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.7s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.4s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          6.9s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.6s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          7.0s
+[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 10.7s (5/7)                                   docker:desktop-linux
+[34m => [internal] load build definition from Dockerfile                       0.1s
+[0m[34m => => transferring dockerfile: 372B                                       0.0s
+[0m[34m => [internal] load metadata for docker.io/library/python:3.9-slim         3.3s
+[0m[34m => [internal] load .dockerignore                                          0.1s
+[0m[34m => => transferring context: 2B                                            0.0s
+[0m[34m => [1/4] FROM docker.io/library/python:3.9-slim@sha256:aff2066ec8914f738  0.0s
+[0m[34m => CACHED [2/4] WORKDIR /app                                              0.0s
+[0m => [3/4] RUN python -m pip install --upgrade pip                          7.2s
+[2m => => # Requirement already satisfied: pip in /usr/local/lib/python3.9/site-pa
+[0m[2m => => # ckages (23.0.1)                                                       
+[0m[?25h
