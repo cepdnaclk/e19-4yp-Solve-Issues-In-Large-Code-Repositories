@@ -78,17 +78,37 @@ class CompressTransformer(cst.CSTTransformer):
 
    
 
+# class GlobalVariableVisitor(cst.CSTVisitor):
+#     METADATA_DEPENDENCIES = (cst.metadata.PositionProvider,)
+
+#     def __init__(self):
+#         self.assigns = []
+
+#     def leave_Assign(self, original_node: cst.Module) -> list:
+#         stmt = original_node
+#         start_pos = self.get_metadata(cst.metadata.PositionProvider, stmt).start
+#         end_pos = self.get_metadata(cst.metadata.PositionProvider, stmt).end
+#         self.assigns.append([stmt, start_pos, end_pos])
+
+
 class GlobalVariableVisitor(cst.CSTVisitor):
-    METADATA_DEPENDENCIES = (cst.metadata.PositionProvider,)
+    METADATA_DEPENDENCIES = (cst.metadata.PositionProvider, cst.metadata.ParentNodeProvider,)
 
     def __init__(self):
         self.assigns = []
 
-    def leave_Assign(self, original_node: cst.Module) -> list:
-        stmt = original_node
-        start_pos = self.get_metadata(cst.metadata.PositionProvider, stmt).start
-        end_pos = self.get_metadata(cst.metadata.PositionProvider, stmt).end
-        self.assigns.append([stmt, start_pos, end_pos])
+    def visit_Assign(self, node: cst.Assign):
+        # Use parent stack to detect if inside a function
+        parent = self.get_metadata(cst.metadata.ParentNodeProvider, node)
+        while parent:
+            if isinstance(parent, cst.FunctionDef):
+                return  # Ignore assignments inside functions
+            parent = self.get_metadata(cst.metadata.ParentNodeProvider, parent)
+
+        # Not inside a function — collect position
+        start_pos = self.get_metadata(cst.metadata.PositionProvider, node).start
+        end_pos = self.get_metadata(cst.metadata.PositionProvider, node).end
+        self.assigns.append([node, start_pos, end_pos])
 
 
 code = """
@@ -161,9 +181,16 @@ def compress_assign_stmts(raw_code, total_lines=30, prefix_lines=10, suffix_line
         print(e.__class__.__name__, e)
         return raw_code
 
+    # wrapper = cst.metadata.MetadataWrapper(tree)
+    # # wrapper.resolve(cst.metadata.ParentNodeProvider)
+    # visitor = GlobalVariableVisitor()
+    # wrapper.visit(visitor)
+    
     wrapper = cst.metadata.MetadataWrapper(tree)
+    wrapper.resolve(cst.metadata.ParentNodeProvider)  # Make sure this is here
     visitor = GlobalVariableVisitor()
     wrapper.visit(visitor)
+
 
     remove_line_intervals = []
     for stmt in visitor.assigns:

@@ -1,0 +1,44 @@
+[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ cp -r django testbed
+cp -r django testbed
+[?2004lcp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.pack': Permission denied
+cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.idx': Permission denied
+cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.rev': Permission denied
+[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ docker run --mount type=bind,src=/home/lahiru-menik/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/testbed/django,dst=/app,ro -it django_4.1 bash
+docker run --mount type=bind,src=/home/lahiru-menik/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/testbed/django,dst=/app,ro -it django_4.1 bash
+[?2004lbash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+[?2004h]0;sandbox@06380b44781d: /appsandbox@06380b44781d:/app$ ls -la
+ls -la
+[?2004ltotal 184
+drwxrwxr-x  12 sandbox sandbox  4096 May 27 15:24 [0m[01;34m.[0m
+drwxr-xr-x   1 root    root     4096 May 27 18:58 [01;34m..[0m
+-rw-rw-r--   1 sandbox sandbox   807 May 27 18:58 .editorconfig
+-rw-rw-r--   1 sandbox sandbox   120 May 27 18:58 .eslintignore
+-rw-rw-r--   1 sandbox sandbox  1407 May 27 18:58 .eslintrc
+drwxrwxr-x   8 sandbox sandbox  4096 May 27 15:24 [01;34m.git[0m
+-rw-rw-r--   1 sandbox sandbox   297 May 27 18:58 .gitattributes
+drwxrwxr-x   3 sandbox sandbox  4096 May 27 15:24 [01;34m.github[0m
+-rw-rw-r--   1 sandbox sandbox   353 May 27 18:58 .gitignore
+-rw-rw-r--   1 sandbox sandbox   281 May 27 18:58 .pre-commit-config.yaml
+-rw-rw-r--   1 sandbox sandbox   385 May 27 18:58 .readthedocs.yml
+drwxrwxr-x   2 sandbox sandbox  4096 May 27 15:24 [01;34m.tx[0m
+-rw-rw-r--   1 sandbox sandbox 39988 May 27 18:58 AUTHORS
+-rw-rw-r--   1 sandbox sandbox  1115 May 27 18:58 CONTRIBUTING.rst
+drwxrwxr-x   2 sandbox sandbox  4096 May 27 15:24 [01;34mDjango.egg-info[0m
+-rw-rw-r--   1 sandbox sandbox   369 May 27 18:58 Gruntfile.js
+-rw-rw-r--   1 sandbox sandbox   236 May 27 18:58 INSTALL
+-rw-rw-r--   1 sandbox sandbox  1552 May 27 18:58 LICENSE
+-rw-rw-r--   1 sandbox sandbox 14377 May 27 18:58 LICENSE.python
+-rw-rw-r--   1 sandbox sandbox   276 May 27 18:58 MANIFEST.in
+-rw-rw-r--   1 sandbox sandbox  2122 May 27 18:58 README.rst
+drwxrwxr-x  18 sandbox sandbox  4096 May 27 15:24 [01;34mdjango[0m
+drwxrwxr-x  13 sandbox sandbox  4096 May 27 15:24 [01;34mdocs[0m
+drwxrwxr-x   2 sandbox sandbox  4096 May 27 15:24 [01;34mextras[0m
+drwxrwxr-x   4 sandbox sandbox  4096 May 27 15:24 [01;34mjs_tests[0m
+-rw-rw-r--   1 sandbox sandbox   334 May 27 18:58 package.json
+-rw-rw-r--   1 sandbox sandbox   109 May 27 18:58 pyproject.toml
+drwxrwxr-x   2 sandbox sandbox  4096 May 27 15:24 [01;34mscripts[0m
+-rw-rw-r--   1 sandbox sandbox  2167 May 27 18:58 setup.cfg
+-rw-rw-r--   1 sandbox sandbox  1611 May 27 18:58 setup.py
+drwxrwxr-x 215 sandbox sandbox 12288 May 27 15:24 [01;34mtests[0m
+-rw-rw-r--   1 sandbox sandbox  1555 May 27 18:58 tox.ini
+[?2004h]0;sandbox@06380b44781d: /appsandbox@06380b44781d:/app$ 
