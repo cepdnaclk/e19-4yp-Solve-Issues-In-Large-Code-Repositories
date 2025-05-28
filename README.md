@@ -1,11 +1,11 @@
-# Solving Issues in Large Code Repositories: Enhancing Software Engineering Solutions with Iterative Reasoning and Graph-Based Retrieval
+# Solve Issues in Large Code Repositories: Enhancing Software Engineering Solutions with Iterative Reasoning and Graph-Based Retrieval
 
 ### A Novel Approach to SWE Bench Optimization
 
 ## Introduction
 
 This repository contains the implementation and research artifacts for our final year project titled:
-**"Solving Issues in Large Code Repositories"**
+**"Solve Issues in Large Code Repositories"**
 
 The project addresses limitations in current automated debugging and patch generation methods by introducing a hybrid approach that combines:
 
