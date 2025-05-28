@@ -114,9 +114,9 @@ Enhance the efficiency and accuracy of automated software engineering solutions 
 
 ## Contributors
 
-* **Achsuthan T.** – E/19/007 – [achsuthant@eng.pdn.ac.lk](mailto:achsuthant@eng.pdn.ac.lk)
-* **Eshan Jayasundara** – E/19/163 – [eshanj@eng.pdn.ac.lk](mailto:eshanj@eng.pdn.ac.lk)
-* **Lahiru Menikdiwela** – E/19/236 – [lahirum@eng.pdn.ac.lk](mailto:lahirum@eng.pdn.ac.lk)
+* **Achsuthan T.** – E/19/007 – [e19007@eng.pdn.ac.lk](mailto:achsuthant@eng.pdn.ac.lk)
+* **Eshan Jayasundara** – E/19/163 – [e19163@eng.pdn.ac.lk](mailto:eshanj@eng.pdn.ac.lk)
+* **Lahiru Menikdiwela** – E/19/236 – [e19236@eng.pdn.ac.lk](mailto:lahirum@eng.pdn.ac.lk)
 * **Supervisors:**
 
   * Prof. Roshan G. Ragel
