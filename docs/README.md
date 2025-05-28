@@ -98,7 +98,7 @@ The proposed methodology includes the following key steps:
 
 #### Architecture
 
-<img src='./images/architecture.png'><br/>
+<img src='./images/architecture_revised.png'><br/>
 
 ## Experiment Setup and Implementation
 
