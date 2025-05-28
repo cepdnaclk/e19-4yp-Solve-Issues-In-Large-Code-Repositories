@@ -96,7 +96,7 @@ The proposed methodology includes the following key steps:
 - Combine multiple LLMs (e.g., [**Claude**](https://www.anthropic.com/index/introducing-claude), [**GPT**](https://openai.com/gpt-4), [**DeepSeek**](https://arxiv.org/abs/2501.12948)) for diverse patch generation.
 - Learn from failed patches using iterative refinement and reasoning, improving overall patch quality.
 
-#### Architecture
+#### **Architecture**
 
 <img src='./images/architecture_revised.png'><br/>
 
