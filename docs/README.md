@@ -115,7 +115,7 @@ The proposed methodology includes the following key steps:
 
 - Artificial stack traces are generated if retrieval fails to find correct files initially.
 
-## Results and Analysis
+<!--## Results and Analysis-->
 
 ## Conclusion
 
