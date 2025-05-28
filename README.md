@@ -1,4 +1,4 @@
-# Solve Issues in Large Code Repositories: Enhancing Software Engineering Solutions with Iterative Reasoning and Graph-Based Retrieval
+# Solve Issues in Large Code Repositories
 
 ### A Novel Approach to SWE Bench Optimization
 
