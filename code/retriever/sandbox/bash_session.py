@@ -10,14 +10,14 @@ import pexpect
 import time, os
 
 class BashSession:
-    def __init__(self, command="bash", prompt="#|\\$", encoding="utf-8", timeout=300):
+    def __init__(self, command="bash", prompt="#|\\$", encoding="utf-8", timeout=600):
         self.prompt = prompt
 
         self.child = pexpect.spawn(command, encoding=encoding)
         self.child.logfile = open("docker_output.log", "w", encoding='utf-8')
         self.child.expect("#|\\$")
 
-    def run_command(self, cmd, timeout=300):
+    def run_command(self, cmd, timeout=600):
         """
         Run a command in the bash session with an optional timeout.
         Returns command output or '[Interrupted due to timeout]'.
