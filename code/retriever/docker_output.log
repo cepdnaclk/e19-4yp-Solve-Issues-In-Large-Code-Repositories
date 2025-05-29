@@ -1,182 +1,168 @@
-[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ cp -r django testbed
+[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ rm -rf testbed/django
+rm -rf testbed/django
+[?2004l[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ cp -r django testbed
 cp -r django testbed
-[?2004lcp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.pack': Permission denied
-cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.idx': Permission denied
-cp: cannot create regular file 'testbed/django/.git/objects/pack/pack-6cea0eff01703ec1a0d80fb742131851c4adbe12.rev': Permission denied
-[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ docker build -t django_4.1 /tmp/tmpkttufsxx
-docker build -t django_4.1 /tmp/tmpkttufsxx
-[?2004l[1A[1B[0G[?25l[+] Building 0.0s (0/0)  docker:desktop-linux
-[?25h[1A[0G[?25l[+] Building 0.0s (0/0)  docker:desktop-linux
-[?25h[1A[0G[?25l[+] Building 0.0s (0/1)                                    docker:desktop-linux
-[?25h[1A[0G[?25l[+] Building 0.1s (2/3)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m => [internal] load .dockerignore                                          0.0s
- => => transferring context:                                               0.0s
-[?25h[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 0.2s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.0s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 0.4s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.1s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 0.5s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.3s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 0.7s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.4s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 0.8s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.6s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.0s (5/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.7s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.0s (6/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.2s (6/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m => [4/4] WORKDIR /testbed                                                 0.2s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.2s (7/7)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.4s (7/8)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m => exporting to image                                                     0.2s
- => => exporting layers                                                    0.2s
-[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.4s (7/8)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m => exporting to image                                                     0.2s
-[34m => => exporting layers                                                    0.2s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.6s (8/8)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m[34m => exporting to image                                                     0.3s
-[0m[34m => => exporting layers                                                    0.2s
-[0m[34m => => writing image sha256:926c47e5d4ce42b6504668b17d97a8e5432aa0905ebdb  0.0s
-[0m[34m => => naming to docker.io/library/django_4.1                              0.0s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.8s (8/8)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m[34m => exporting to image                                                     0.3s
-[0m[34m => => exporting layers                                                    0.2s
-[0m[34m => => writing image sha256:926c47e5d4ce42b6504668b17d97a8e5432aa0905ebdb  0.0s
-[0m[34m => => naming to docker.io/library/django_4.1                              0.0s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 1.9s (8/8)                                    docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m[34m => exporting to image                                                     0.3s
-[0m[34m => => exporting layers                                                    0.2s
-[0m[34m => => writing image sha256:926c47e5d4ce42b6504668b17d97a8e5432aa0905ebdb  0.0s
-[0m[34m => => naming to docker.io/library/django_4.1                              0.0s
-[0m[?25h[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[1A[0G[?25l[+] Building 2.0s (8/8) FINISHED                           docker:desktop-linux
-[34m => [internal] load build definition from Dockerfile                       0.1s
-[0m[34m => => transferring dockerfile: 255B                                       0.0s
-[0m[34m => [internal] load metadata for docker.io/library/swe_py_3.9:latest       0.0s
-[0m[34m => [internal] load .dockerignore                                          0.0s
-[0m[34m => => transferring context: 2B                                            0.0s
-[0m[34m => CACHED [1/4] FROM docker.io/library/swe_py_3.9:latest                  0.0s
-[0m[34m => [2/4] WORKDIR /testbed                                                 0.1s
-[0m[34m => [3/4] RUN groupadd --gid 1000 sandbox &&     useradd --uid 1000 --gid  0.8s
-[0m[34m => [4/4] WORKDIR /testbed                                                 0.2s
-[0m[34m => exporting to image                                                     0.3s
-[0m[34m => => exporting layers                                                    0.2s
-[0m[34m => => writing image sha256:926c47e5d4ce42b6504668b17d97a8e5432aa0905ebdb  0.0s
-[0m[34m => => naming to docker.io/library/django_4.1                              0.0s
-[0m[?25h
-View build details: ]8;;docker-desktop://dashboard/build/desktop-linux/desktop-linux/xhggzaszfhlsxmaeodh5uta3t\docker-desktop://dashboard/build/desktop-linux/desktop-linux/xhggzaszfhlsxmaeodh5uta3t]8;;\
-[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ exit
+[?2004l[?2004h(base) ]0;lahiru-menik@lahiru-menik-ASUS-EXPERTBOOK: ~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[01;32mlahiru-menik@lahiru-menik-ASUS-EXPERTBOOK[00m:[01;34m~/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever[00m$ docker run --mount type=bind,src=/home/lahiru-menik/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/testbed/django,dst=/testbed -it django_5.0 bash
+docker run --mount type=bind,src=/home/lahiru-menik/Documents/fyp/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/testbed/django,dst=/testbed -it django_5.0 bash
+[?2004l[?2004h]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ source /opt/miniconda3/bin/activate py_3.11
+source /opt/miniconda3/bin/activate py_3.11
+[?2004l[?2004h(py_3.11) ]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ python -m pip install -e .
+python -m pip install -e .
+[?2004lDefaulting to user installation because normal site-packages is not writeable
+Obtaining file:///testbed
+  Installing build dependencies ... [?25l- \ | / - done
+[?25h  Checking if build backend supports build_editable ... [?25ldone
+[?25h  Getting requirements to build editable ... [?25l- error
+  [1;31merror[0m: [1msubprocess-exited-with-error[0m
+  
+  [31m×[0m [32mGetting requirements to build editable[0m did not run successfully.
+  [31m│[0m exit code: [1;36m1[0m
+  [31m╰─>[0m [31m[23 lines of output][0m
+  [31m   [0m Traceback (most recent call last):
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 389, in <module>
+  [31m   [0m     main()
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 373, in main
+  [31m   [0m     json_out["return_val"] = hook(**hook_input["kwargs"])
+  [31m   [0m                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 157, in get_requires_for_build_editable
+  [31m   [0m     return hook(config_settings)
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-arzlwk20/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 473, in get_requires_for_build_editable
+  [31m   [0m     return self.get_requires_for_build_wheel(config_settings)
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-arzlwk20/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 331, in get_requires_for_build_wheel
+  [31m   [0m     return self._get_build_requires(config_settings, requirements=[])
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-arzlwk20/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
+  [31m   [0m     self.run_setup()
+  [31m   [0m   File "/tmp/pip-build-env-arzlwk20/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 317, in run_setup
+  [31m   [0m     exec(code, locals())
+  [31m   [0m   File "<string>", line 54
+  [31m   [0m     % {"existing_path":
+  [31m   [0m       ^
+  [31m   [0m SyntaxError: '{' was never closed
+  [31m   [0m [31m[end of output][0m
+  
+  [1;35mnote[0m: This error originates from a subprocess, and is likely not a problem with pip.
+[1;31merror[0m: [1msubprocess-exited-with-error[0m
+
+[31m×[0m [32mGetting requirements to build editable[0m did not run successfully.
+[31m│[0m exit code: [1;36m1[0m
+[31m╰─>[0m See above for output.
+
+[1;35mnote[0m: This error originates from a subprocess, and is likely not a problem with pip.
+[?25h[?2004h(py_3.11) ]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ python -m pip install -e .
+python -m pip install -e .
+[?2004lDefaulting to user installation because normal site-packages is not writeable
+Obtaining file:///testbed
+  Installing build dependencies ... [?25l- \ done
+[?25h  Checking if build backend supports build_editable ... [?25ldone
+[?25h  Getting requirements to build editable ... [?25l- error
+  [1;31merror[0m: [1msubprocess-exited-with-error[0m
+  
+  [31m×[0m [32mGetting requirements to build editable[0m did not run successfully.
+  [31m│[0m exit code: [1;36m1[0m
+  [31m╰─>[0m [31m[23 lines of output][0m
+  [31m   [0m Traceback (most recent call last):
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 389, in <module>
+  [31m   [0m     main()
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 373, in main
+  [31m   [0m     json_out["return_val"] = hook(**hook_input["kwargs"])
+  [31m   [0m                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/pyproject_hooks/_in_process/_in_process.py", line 157, in get_requires_for_build_editable
+  [31m   [0m     return hook(config_settings)
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-kws7okdc/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 473, in get_requires_for_build_editable
+  [31m   [0m     return self.get_requires_for_build_wheel(config_settings)
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-kws7okdc/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 331, in get_requires_for_build_wheel
+  [31m   [0m     return self._get_build_requires(config_settings, requirements=[])
+  [31m   [0m            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  [31m   [0m   File "/tmp/pip-build-env-kws7okdc/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 301, in _get_build_requires
+  [31m   [0m     self.run_setup()
+  [31m   [0m   File "/tmp/pip-build-env-kws7okdc/overlay/lib/python3.11/site-packages/setuptools/build_meta.py", line 317, in run_setup
+  [31m   [0m     exec(code, locals())
+  [31m   [0m   File "<string>", line 54
+  [31m   [0m     % {"existing_path":
+  [31m   [0m       ^
+  [31m   [0m SyntaxError: '{' was never closed
+  [31m   [0m [31m[end of output][0m
+  
+  [1;35mnote[0m: This error originates from a subprocess, and is likely not a problem with pip.
+[1;31merror[0m: [1msubprocess-exited-with-error[0m
+
+[31m×[0m [32mGetting requirements to build editable[0m did not run successfully.
+[31m│[0m exit code: [1;36m1[0m
+[31m╰─>[0m See above for output.
+
+[1;35mnote[0m: This error originates from a subprocess, and is likely not a problem with pip.
+[?25h[?2004h(py_3.11) ]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ pip install -r tests/requirements/py3.txt
+pip install -r tests/requirements/py3.txxt
+[?2004lDefaulting to user installation because normal site-packages is not writeable
+[31mERROR: Exception:
+Traceback (most recent call last):
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/markers.py", line 280, in __init__
+    self._markers = _normalize_extra_values(_parse_marker(marker))
+                                            ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 253, in parse_marker
+    return _parse_full_marker(Tokenizer(source, rules=DEFAULT_RULES))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 257, in _parse_full_marker
+    retval = _parse_marker(tokenizer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 266, in _parse_marker
+    expression = [_parse_marker_atom(tokenizer)]
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 291, in _parse_marker_atom
+    marker = _parse_marker_item(tokenizer)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 301, in _parse_marker_item
+    marker_var_left = _parse_marker_var(tokenizer)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_parser.py", line 319, in _parse_marker_var
+    tokenizer.raise_syntax_error(
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/_tokenizer.py", line 168, in raise_syntax_error
+    raise ParserSyntaxError(
+pip._vendor.packaging._tokenizer.ParserSyntaxError: Expected a marker variable or quoted string
+    sys.pla
+    ^
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/cli/base_command.py", line 105, in _run_wrapper
+    status = _inner_run()
+             ^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/cli/base_command.py", line 96, in _inner_run
+    return self.run(options, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/cli/req_command.py", line 68, in wrapper
+    return func(self, options, args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/commands/install.py", line 351, in run
+    reqs = self.get_requirements(args, options, finder, session)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/cli/req_command.py", line 271, in get_requirements
+    req_to_add = install_req_from_parsed_requirement(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/req/constructors.py", line 480, in install_req_from_parsed_requirement
+    req = install_req_from_line(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/req/constructors.py", line 405, in install_req_from_line
+    parts = parse_req_from_line(name, line_source)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_internal/req/constructors.py", line 318, in parse_req_from_line
+    markers = Marker(markers_as_string)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/envs/py_3.11/lib/python3.11/site-packages/pip/_vendor/packaging/markers.py", line 298, in __init__
+    raise InvalidMarker(str(e)) from e
+pip._vendor.packaging.markers.InvalidMarker: Expected a marker variable or quoted string
+    sys.pla
+    ^[0m[31m
+[0m[?2004h(py_3.11) ]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ [K./tests/runtests.py --verbosity 2 --settings=test_sqlite --parallel 1 migrations.test_writer.WriterTests.test_serialize_nested_class_method
+./tests/runtests.py --verbosity 2 --setttings=test_sqlite --parallel 1 migrations.test_writer.WriterTests.test_serialize__nested_class_method
+[?2004l  File "/testbed/./tests/runtests.py", line 735
+    if options.se
+                 ^
+SyntaxError: expected ':'
+[?2004h(py_3.11) ]0;sandbox@511cc1ce4998: /testbedsandbox@511cc1ce4998:/testbed$ [Kexit
