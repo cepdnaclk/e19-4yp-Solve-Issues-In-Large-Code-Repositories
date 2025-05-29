@@ -15,7 +15,7 @@ class BashSession:
 
         self.child = pexpect.spawn(command, encoding=encoding)
         self.child.logfile = open("docker_output.log", "w", encoding='utf-8')
-        self.child.expect("#|\\$")
+        self.child.expect("\\$")
 
     def run_command(self, cmd, timeout=600):
         """
@@ -26,7 +26,7 @@ class BashSession:
         self.child.sendline(cmd)
 
         try:
-            self.child.expect("#|\\$", timeout=timeout)
+            self.child.expect("\\$", timeout=timeout)
             output = self.child.before
             # output = output[len(cmd)+1:].lstrip()  # Remove the command itself from the output
             # output = output.strip()  # Clean up any leading/trailing whitespace
