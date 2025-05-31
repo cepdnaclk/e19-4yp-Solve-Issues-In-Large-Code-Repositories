@@ -8,62 +8,90 @@ ___________________________________________________________
 """
 
 
-from langchain_openai import OpenAIEmbeddings
-import faiss
-from langchain_community.docstore.in_memory import InMemoryDocstore
-from langchain_community.vectorstores import FAISS
-from dotenv import load_dotenv
-from langchain_core.documents import Document
-from utils.embed_skeleton import get_skeleton
-from utils.utils import serialize_dict_to_json
 import os
-
+import openai
+import chromadb
+import traceback
+# import faiss
+# from langchain_community.docstore.in_memory import InMemoryDocstore
+# from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
+from langchain_core.documents import Document
+from langchain_chroma import Chroma
+from utils.compress import get_skeleton
+from utils.chunk import SimpleFixedLengthChunker
+from utils.utils import serialize_dict_to_json
+from dotenv import load_dotenv
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 load_dotenv()
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-index = faiss.IndexFlatL2(len(embeddings.embed_query("hello world")))
-
-vector_store = FAISS(
-    embedding_function=embeddings,
-    index=index,
-    docstore=InMemoryDocstore(),
-    index_to_docstore_id={},
-)
 
 def build(name):
     documents = []
+    result = {}
     id = 0
     ids = []
+    chunker = SimpleFixedLengthChunker()
     for root,dir, files in os.walk(name):
         for file in files:
             if file.endswith(".py"):
                 full_name = root + "/" + file
                 if "tests" in full_name.split("/") or "test" in full_name.split("/"):
+                    # print(full_name)
                     continue
                 try:
                     with open(f"{root}/{file}", "r") as f:
                         content = f.read()
-                    sketch = get_skeleton(content, keep_constant = False, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
-                    if sketch:
-                        # print(sketch)
-                        doc = Document(page_content= sketch, metadata = {"filename": f"{root}/{file}"})
-                        documents.append(doc)
-                        id += 1
-                        ids.append(id)
+                    chunks = chunker.chunk_file(code=content)
+                    if chunks:
+                        chunk_ids = []
+                        for chunk in chunks:
+                            doc = Document(page_content=chunk, metadata={"filename": f"{root}/{file}"})
+                            documents.append(doc)
+                            id += 1
+                            ids.append(str(id))
+                            chunk_ids.append(str(id))
+                        result[f"{root}/{file}"] = ":".join(chunk_ids)
+                    else:
+                        raise ValueError("Empty chunks array in vc.py at line:56 ...")
+
+                    # sketch = get_skeleton(content, keep_constant = True, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
+                    # if sketch:
+                    #     # print(sketch)
+                    #     doc = Document(page_content= sketch, metadata = {"filename": f"{root}/{file}"})
+                    #     documents.append(doc)
+                    #     id += 1
+                    #     ids.append(str(id))
                     # else:
                     #     print(sketch)
+                    
                 except Exception as e:
-                    print(f"[!] Error adding file '{root}/{file}': {e}")
-    result = {}
-    for i in range(len(documents)):
-        result[documents[i].metadata['filename']] = ids[i]
+                    print(f"[!] Not an error but the file '{root}/{file}' seems to be empty which leads to: {e}")
+    
+    result["max_id"] = id
     serialize_dict_to_json(result, f"{name}_file_ids.json")
-    vector_store.add_documents(documents=documents, ids=ids)
-    vector_store.save_local(f"{name}_faiss_index")
+    
+    client = chromadb.PersistentClient(path='chroma_db')
+    collection = client.get_or_create_collection(f"{name}_chroma_index")
+
+    vector_store = Chroma(
+        client=client,
+        collection_name=f"{name}_chroma_index",
+        embedding_function=embeddings,
+    )
+
+    try:
+        batch_ids = []
+        if len(documents) > client.get_max_batch_size():
+                batch_size = 4000
+        for i in range(0, len(documents), batch_size):
+            batch_documents = documents[i:i+batch_size]
+            batch_ids = ids[i:i+batch_size]
+            vector_store.add_documents(documents=batch_documents, ids=batch_ids)
+    except Exception as e:
+        traceback.print_exc()
                     
 if __name__ == "__main__":
     build("django")
-
-    

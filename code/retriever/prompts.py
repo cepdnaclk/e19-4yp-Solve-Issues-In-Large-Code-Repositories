@@ -235,3 +235,18 @@ Candidate Files (with initial reasoning):
 '''
     )
 ])
+
+prompt_embedding_retriver = ChatPromptTemplate.from_messages([
+        (
+            "system",
+            '''You are a expert in generating descriptions including both text and codes that are simantically similar to the given description.'''),
+        (
+            "human",
+            '''### **Given GitHub issue description**:
+     
+```{problem_description}```
+
+`With the help of above description generate 5 simantically similar descriptions.`
+'''
+        )
+])

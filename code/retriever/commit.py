@@ -6,7 +6,6 @@ ___________________________________________________________
 
 """
             
-
 import git
 import sys
 import networkx as nx
@@ -14,14 +13,19 @@ import pickle
 import re
 import os
 from utils import utils
-from utils.embed_skeleton import get_skeleton
 import ast
-import faiss
+import chromadb
+import traceback
+# import faiss
+# from utils.embed_skeleton import get_skeleton
+from utils.chunk import SimpleFixedLengthChunker
+from collections import deque
 from dotenv import load_dotenv
-from langchain.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
-from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
+from langchain_chroma import Chroma
+# from langchain_community.vectorstores import FAISS
 
 
 def neighbors_by_relation(G, node, relation_type):
@@ -145,24 +149,33 @@ def remove_isolated_nodes(G):
 def update(repo_path, latest_commit):
     load_dotenv()
     embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+
     repo = git.Repo(repo_path)
     repo_name = repo_path #repo_path.split("/")[-2]
     repo_path = repo_path+"/"
     file_ids = utils.deserialize_json_to_dict(f"{repo_name}_file_ids.json")
+
     print(repo_name)
+
     base_commit = repo.head.commit.hexsha  # Get the latest commit hash
     graph = load_graph(f"graph_{repo_name}.pkl")
+
     print(graph)
-    diff_index = repo.git.diff('--name-status', base_commit, latest_commit)
-    vector_store = FAISS.load_local(
-    f"{repo_name}_faiss_index", embeddings, allow_dangerous_deserialization=True
-    )
     
+    diff_index = repo.git.diff('--name-status', base_commit, latest_commit)
+
+    chroma_client = chromadb.PersistentClient(f"chroma_db")
+    collection = chroma_client.get_collection(name=f"{repo_name}_chroma_index")
+
+    vector_store = Chroma(
+        client=chroma_client,
+        collection_name=f"{repo_name}_chroma_index",
+        embedding_function=embeddings,
+    )
 
     renamed_files = {}
     added_files = []
     deleted_files = []
-    
     
     for line in diff_index.split("\n"):
         if not line.strip():
@@ -186,16 +199,18 @@ def update(repo_path, latest_commit):
         if change_type == "D":  # Deleted file
             deleted_files.append(repo_path+parts[1])
     
-    delete_ids_vc = []
+    delete_ids_vc = deque([])
+
     for file in deleted_files:
         if not file.endswith(".py"):
             continue
         delete_node_and_edges(graph, file)
         if file in file_ids:
-            id = file_ids[file]
+            ids = file_ids[file]
             del file_ids[file]
-            delete_ids_vc.append(id)
-            vector_store.delete([id])
+            for i in ids.split(":"):
+                delete_ids_vc.append(i)
+            vector_store.delete(ids.split(":"))
     utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     checkout_commit(repo_path, latest_commit)    
     update_class_functions_file(added_files, graph) 
@@ -212,22 +227,34 @@ def update(repo_path, latest_commit):
     
     documents_vc = [] 
     id_vc = []
+    # max_id = max(int(num) for val in file_ids.values() for num in val.split(":")) + 1
+    max_id = file_ids["max_id"] + 1
     for file_path in added_files:
         if not file_path.endswith(".py"):
             continue
         try:
+            # TODO: Use Multi Threding to Chunk each File Parallely
+            chunker = SimpleFixedLengthChunker()
             with open(file_path, "r") as f:
                 content = f.read()
             if content:
-                sketch = get_skeleton(content, keep_constant = False, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
-                doc = Document(page_content= sketch, metadata = {"filename": file_path})
-                if delete_ids_vc:
-                    id = delete_ids_vc.pop(0)
-                else:
-                    id = max(file_ids.values()) + 1
-                file_ids[file_path] = id
-                documents_vc.append(doc)
-                id_vc.append(id)
+                if "tests" in file_path.split("/") or "test" in file_path.split("/"):
+                    # print("from comit test")
+                    continue
+                chunks = chunker.chunk_file(code=content)
+                if chunks:
+                    chunk_ids = []
+                    for chunk in chunks:
+                        doc = Document(page_content=chunk, metadata={"filename": file_path})
+                        if delete_ids_vc:
+                            id = delete_ids_vc.popleft()
+                        else:
+                            id = max_id
+                            max_id += 1
+                        chunk_ids.append(str(id))
+                        documents_vc.append(doc)
+                        id_vc.append(str(id))
+                    file_ids[file_path] = ":".join(chunk_ids)
         except Exception as e:
             print(f"[!] Error adding file '{file_path}': {e}")
         # print(file_path, "kk")
@@ -243,9 +270,20 @@ def update(repo_path, latest_commit):
             if not i.endswith(".py"):
                 continue
             insert_edge(graph, file_path, i, relation="imports", node_type_v="full_path", node_type_u="full_path")
+
     if documents_vc and id_vc:
-        vector_store.add_documents(documents=documents_vc, ids=id_vc)
-        vector_store.save_local(f"{repo_name}_faiss_index")
+        batch_ids = []
+        try:
+            if len(documents_vc) > chroma_client.get_max_batch_size():
+                batch_size = 4000
+            for i in range(0, len(documents_vc), batch_size):
+                batch_documents = documents_vc[i:i+batch_size]
+                batch_ids = id_vc[i:i+batch_size]
+                vector_store.add_documents(documents=batch_documents, ids=batch_ids)
+        except Exception as e:
+            traceback.print_exc()
+    
+        # vector_store.save_local(f"{repo_name}_chroma_index")
         utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     remove_isolated_nodes(graph)         
     print(graph)
@@ -253,6 +291,7 @@ def update(repo_path, latest_commit):
     # checkout_commit(repo_path, latest_commit)
 
     return
+
 repo_name = "django"
 repo_path = f"test/{repo_name}/"
 # ch, ren, ad, de, import_ch, import_dict, import_delete_dict = 
