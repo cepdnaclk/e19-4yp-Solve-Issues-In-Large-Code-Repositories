@@ -284,7 +284,8 @@ def update(repo_path, latest_commit):
             traceback.print_exc()
     
         # vector_store.save_local(f"{repo_name}_chroma_index")
-        utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
+    file_ids["max_id"] = max_id
+    utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     remove_isolated_nodes(graph)         
     print(graph)
     save_graph(graph, f"graph_{repo_name}.pkl")
