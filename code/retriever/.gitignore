@@ -4,7 +4,7 @@ django_faiss_index
 __pycache__
 venv
 chroma_db
-graph_django.pkl
+*.pkl
 django_file_ids.json
-embedding_baseed_retrivals.json
+embedding_based_retrievals.json
 *.log
