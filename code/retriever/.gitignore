@@ -8,3 +8,4 @@ chroma_db
 django_file_ids.json
 embedding_based_retrievals.json
 *.log
+*.prof

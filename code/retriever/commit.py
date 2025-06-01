@@ -210,20 +210,21 @@ def update(repo_path, latest_commit):
             del file_ids[file]
             for i in ids.split(":"):
                 delete_ids_vc.append(i)
-            vector_store.delete(ids.split(":"))
+
+    if delete_ids_vc:
+        batch_ids = []
+        try:
+            if len(delete_ids_vc) > chroma_client.get_max_batch_size():
+                batch_size = 4000
+            for i in range(0, len(delete_ids_vc), batch_size):
+                batch_ids = list(delete_ids_vc)[i:i+batch_size]
+                vector_store.delete(batch_ids)
+        except Exception as e:
+            traceback.print_exc()
+
     utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     checkout_commit(repo_path, latest_commit)    
     update_class_functions_file(added_files, graph) 
-    
-    for file in added_files:
-        if not file.endswith(".py"):
-            continue
-        if file in renamed_files:
-            file = renamed_files[file_path]
-        # print("kk")
-        name = file.split("/")[-1].split(".")[0]
-        # print(repo_path+file)
-        insert_edge(graph, "module_"+name, file, relation="path", node_type_v="full_path", node_type_u="module_name")
     
     documents_vc = [] 
     id_vc = []
@@ -232,6 +233,9 @@ def update(repo_path, latest_commit):
     for file_path in added_files:
         if not file_path.endswith(".py"):
             continue
+        name = file.split("/")[-1].split(".")[0]
+        # print(repo_path+file)
+        insert_edge(graph, "module_"+name, file, relation="path", node_type_v="full_path", node_type_u="module_name")
         try:
             # TODO: Use Multi Threding to Chunk each File Parallely
             chunker = SimpleFixedLengthChunker()
