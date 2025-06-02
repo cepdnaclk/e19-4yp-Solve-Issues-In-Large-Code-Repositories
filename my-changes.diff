@@ -1,0 +1,259 @@
+diff --git a/code/retriever/embedding_based_retriever_tesr.ipynb b/code/retriever/embedding_based_retriever_tesr.ipynb
+index 65c78b9..291b80c 100644
+--- a/code/retriever/embedding_based_retriever_tesr.ipynb
++++ b/code/retriever/embedding_based_retriever_tesr.ipynb
+@@ -2,7 +2,7 @@
+   "cells": [
+     {
+       "cell_type": "code",
+-      "execution_count": 1,
++      "execution_count": null,
+       "metadata": {},
+       "outputs": [],
+       "source": [
+@@ -51,7 +51,7 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 2,
++      "execution_count": null,
+       "id": "a4fa7cd9",
+       "metadata": {},
+       "outputs": [],
+@@ -65,7 +65,7 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 3,
++      "execution_count": null,
+       "metadata": {},
+       "outputs": [],
+       "source": [
+@@ -98,18 +98,9 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 4,
++      "execution_count": null,
+       "metadata": {},
+-      "outputs": [
+-        {
+-          "name": "stderr",
+-          "output_type": "stream",
+-          "text": [
+-            "/tmp/ipykernel_1211925/3732032862.py:4: LangChainDeprecationWarning: The function `_convert_pydantic_to_openai_function` was deprecated in LangChain 0.1.16 and will be removed in 1.0. Use :meth:`~langchain_core.utils.function_calling.convert_to_openai_function()` instead.\n",
+-            "  functions=[convert_pydantic_to_openai_function(schema.SuspiciousComponentOutput)],\n"
+-          ]
+-        }
+-      ],
++      "outputs": [],
+       "source": [
+         "parser = JsonOutputFunctionsParser()\n",
+         "\n",
+@@ -156,7 +147,7 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 5,
++      "execution_count": null,
+       "metadata": {},
+       "outputs": [],
+       "source": [
+@@ -184,7 +175,7 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 6,
++      "execution_count": null,
+       "metadata": {},
+       "outputs": [],
+       "source": [
+@@ -224,112 +215,13 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 9,
++      "execution_count": null,
+       "metadata": {},
+-      "outputs": [
+-        {
+-          "name": "stdout",
+-          "output_type": "stream",
+-          "text": [
+-            "django\n",
+-            "DiGraph with 25367 nodes and 32407 edges\n",
+-            "Node 'django/django/conf/locale/__init__.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ar_DZ/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/az/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/cs/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/cy/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/de/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/de_CH/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/el/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/en/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/en_AU/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/en_GB/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/eo/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/fi/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/fr/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/hr/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/hu/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/id/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ig/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/it/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ka/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ko/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ky/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/lt/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/lv/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/mk/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ml/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/nb/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/nl/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/nn/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/pl/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/pt/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/pt_BR/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/ru/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/sk/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/sl/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/sr/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/sr_Latn/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/sv/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/tg/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/tk/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/tr/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/uk/formats.py' does not exist.\n",
+-            "Node 'django/django/conf/locale/uz/formats.py' does not exist.\n",
+-            "Node 'django/django/contrib/gis/db/backends/postgis/const.py' does not exist.\n",
+-            "Node 'django/django/contrib/sitemaps/management/__init__.py' does not exist.\n",
+-            "Node 'django/django/contrib/sitemaps/management/commands/__init__.py' does not exist.\n",
+-            "Node 'django/django/test/__init__.py' does not exist.\n",
+-            "Node 'django/setup.py' does not exist.\n",
+-            "Node 'django/tests/apps/explicit_default_config_app/__init__.py' does not exist.\n",
+-            "Node 'django/tests/apps/explicit_default_config_empty_apps/apps.py' does not exist.\n",
+-            "Node 'django/tests/apps/explicit_default_config_mismatch_app/__init__.py' does not exist.\n",
+-            "Node 'django/tests/auth_tests/models/__init__.py' does not exist.\n",
+-            "Node 'django/tests/auth_tests/settings.py' does not exist.\n",
+-            "Node 'django/tests/builtin_server/urls.py' does not exist.\n",
+-            "Node 'django/tests/check_framework/urls/path_compatibility/contains_re_named_group.py' does not exist.\n",
+-            "Node 'django/tests/file_uploads/urls.py' does not exist.\n",
+-            "Node 'django/tests/flatpages_tests/absolute_urls.py' does not exist.\n",
+-            "Node 'django/tests/flatpages_tests/no_slash_urls.py' does not exist.\n",
+-            "Node 'django/tests/flatpages_tests/urls.py' does not exist.\n",
+-            "Node 'django/tests/generic_views/urls.py' does not exist.\n",
+-            "Node 'django/tests/gis_tests/geoapp/urls.py' does not exist.\n",
+-            "Node 'django/tests/handlers/urls.py' does not exist.\n",
+-            "Node 'django/tests/i18n/patterns/urls/default.py' does not exist.\n",
+-            "Node 'django/tests/middleware/urls.py' does not exist.\n",
+-            "Node 'django/tests/middleware_exceptions/urls.py' does not exist.\n",
+-            "Node 'django/tests/model_meta/results.py' does not exist.\n",
+-            "Node 'django/tests/staticfiles_tests/settings.py' does not exist.\n",
+-            "Node 'django/tests/syndication_tests/urls.py' does not exist.\n",
+-            "Node 'django/tests/test_client/urls.py' does not exist.\n",
+-            "Node 'django/tests/test_client_regress/urls.py' does not exist.\n",
+-            "Node 'django/tests/test_sqlite.py' does not exist.\n",
+-            "Node 'django/tests/urlpatterns/path_same_name_urls.py' does not exist.\n",
+-            "Node 'django/tests/urlpatterns/path_urls.py' does not exist.\n",
+-            "Node 'django/tests/view_tests/urls.py' does not exist.\n",
+-            "Checked out to df46b329e0900e9e4dc1d60816c1dce6dfc1094e\n",
+-            "DiGraph with 23394 nodes and 29690 edges\n",
+-            "Tokens Used: 1542\n",
+-            "\tPrompt Tokens: 1511\n",
+-            "\t\tPrompt Tokens Cached: 0\n",
+-            "\tCompletion Tokens: 31\n",
+-            "\t\tReasoning Tokens: 0\n",
+-            "Successful Requests: 1\n",
+-            "Total Cost (USD): $0.0040875\n",
+-            "Tokens Used: 2403\n",
+-            "\tPrompt Tokens: 2283\n",
+-            "\t\tPrompt Tokens Cached: 0\n",
+-            "\tCompletion Tokens: 120\n",
+-            "\t\tReasoning Tokens: 0\n",
+-            "Successful Requests: 1\n",
+-            "Total Cost (USD): $0.0004144499999999999\n"
+-          ]
+-        }
+-      ],
++      "outputs": [],
+       "source": [
+         "retrivals = []\n",
+         "\n",
+-        "for i in range(3, 4):\n",
++        "for i in range(2, 30):\n",
+         "    ips = {}\n",
+         "\n",
+         "    ips[\"commit_id\"] = dataset[i]['base_commit']\n",
+@@ -364,67 +256,10 @@
+     },
+     {
+       "cell_type": "code",
+-      "execution_count": 10,
++      "execution_count": null,
+       "id": "9d78cca4",
+       "metadata": {},
+-      "outputs": [
+-        {
+-          "name": "stdout",
+-          "output_type": "stream",
+-          "text": [
+-            "Sun Jun  1 18:57:58 2025    profiling_results.prof\n",
+-            "\n",
+-            "         66087612 function calls (65596861 primitive calls) in 683.986 seconds\n",
+-            "\n",
+-            "   Ordered by: cumulative time\n",
+-            "   List reduced from 2684 to 30 due to restriction <30>\n",
+-            "\n",
+-            "   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n",
+-            "        1    0.011    0.011  672.553  672.553 /tmp/ipykernel_1211925/2347640675.py:1(start)\n",
+-            "        1    0.153    0.153  670.007  670.007 /home/e19163/FYP/retriver_test/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/commit.py:149(update)\n",
+-            "        3    0.501    0.167  399.979  133.326 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/langchain_core/vectorstores/base.py:262(add_documents)\n",
+-            "        3    0.016    0.005  399.469  133.156 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/langchain_chroma/vectorstores.py:497(add_texts)\n",
+-            "        3    0.000    0.000  298.050   99.350 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/chromadb/api/models/Collection.py:340(upsert)\n",
+-            "        3    0.002    0.001  285.747   95.249 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/chromadb/api/rust.py:459(_upsert)\n",
+-            "        3  285.744   95.248  285.744   95.248 {method 'upsert' of 'builtins.Bindings' objects}\n",
+-            "        3    0.000    0.000  164.517   54.839 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/langchain_chroma/vectorstores.py:1247(delete)\n",
+-            "        3    0.000    0.000  164.517   54.839 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/chromadb/api/models/Collection.py:385(delete)\n",
+-            "        3    0.002    0.001  164.511   54.837 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/chromadb/api/rust.py:535(_delete)\n",
+-            "        3  164.508   54.836  164.508   54.836 {method 'delete' of 'builtins.Bindings' objects}\n",
+-            "       14    0.000    0.000  109.394    7.814 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/openai/_base_client.py:1225(post)\n",
+-            "       14    0.001    0.000  109.390    7.814 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/openai/_base_client.py:931(request)\n",
+-            "       14    0.000    0.000  106.830    7.631 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpx/_client.py:879(send)\n",
+-            "        4    0.015    0.004  103.216   25.804 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/langchain_openai/embeddings/base.py:557(embed_documents)\n",
+-            "        4    0.089    0.022  103.201   25.800 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/langchain_openai/embeddings/base.py:449(_get_len_safe_embeddings)\n",
+-            "       12    0.001    0.000  101.694    8.475 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/openai/resources/embeddings.py:47(create)\n",
+-            "     5431    0.067    0.000   99.856    0.018 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpcore/_sync/http11.py:209(_receive_event)\n",
+-            "     5408    0.039    0.000   99.273    0.018 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpcore/_backends/sync.py:124(read)\n",
+-            "     5408    0.013    0.000   99.175    0.018 /home/e19163/miniconda/envs/fyp/lib/python3.11/ssl.py:1288(recv)\n",
+-            "     5408    0.012    0.000   99.160    0.018 /home/e19163/miniconda/envs/fyp/lib/python3.11/ssl.py:1157(read)\n",
+-            "     5408   99.147    0.018   99.147    0.018 {method 'read' of '_ssl._SSLSocket' objects}\n",
+-            "        3    0.000    0.000   64.879   21.626 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/git/cmd.py:1523(_call_process)\n",
+-            "        3    0.000    0.000   64.878   21.626 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/git/cmd.py:1079(execute)\n",
+-            "        2    0.000    0.000   64.874   32.437 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/git/cmd.py:986(<lambda>)\n",
+-            "        1    0.000    0.000   61.804   61.804 /home/e19163/FYP/retriver_test/e19-4yp-Solve-Issues-In-Large-Code-Repositories/code/retriever/commit.py:118(checkout_commit)\n",
+-            "       14    0.000    0.000   61.009    4.358 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpx/_client.py:930(_send_handling_auth)\n",
+-            "       14    0.000    0.000   61.008    4.358 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpx/_client.py:964(_send_handling_redirects)\n",
+-            "       14    0.001    0.000   61.008    4.358 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpx/_client.py:1001(_send_single_request)\n",
+-            "       14    0.001    0.000   60.991    4.356 /home/e19163/miniconda/envs/fyp/lib/python3.11/site-packages/httpx/_transports/default.py:230(handle_request)\n",
+-            "\n",
+-            "\n"
+-          ]
+-        },
+-        {
+-          "data": {
+-            "text/plain": [
+-              "<pstats.Stats at 0x7e3dbb351a10>"
+-            ]
+-          },
+-          "execution_count": 10,
+-          "metadata": {},
+-          "output_type": "execute_result"
+-        }
+-      ],
++      "outputs": [],
+       "source": [
+         "p = pstats.Stats('profiling_results.prof')\n",
+         "p.sort_stats('cumulative').print_stats(30)  # Sort by cumulative time and print top 10"
+diff --git a/code/retriever/utils/__pycache__/utils.cpython-311.pyc b/code/retriever/utils/__pycache__/utils.cpython-311.pyc
+index 0a7eb04..095987c 100644
+Binary files a/code/retriever/utils/__pycache__/utils.cpython-311.pyc and b/code/retriever/utils/__pycache__/utils.cpython-311.pyc differ
