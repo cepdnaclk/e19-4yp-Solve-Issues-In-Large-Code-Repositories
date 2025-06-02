@@ -85,7 +85,9 @@ def build(name):
     try:
         batch_ids = []
         if len(documents) > client.get_max_batch_size():
-                batch_size = 4000
+            batch_size = 4000
+        else:
+            batch_size = len(documents)
         for i in range(0, len(documents), batch_size):
             batch_documents = documents[i:i+batch_size]
             batch_ids = ids[i:i+batch_size]

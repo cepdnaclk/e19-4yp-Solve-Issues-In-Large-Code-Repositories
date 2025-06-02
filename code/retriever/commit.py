@@ -216,6 +216,8 @@ def update(repo_path, latest_commit):
         try:
             if len(delete_ids_vc) > chroma_client.get_max_batch_size():
                 batch_size = 4000
+            else:
+                batch_size = len(delete_ids_vc)
             for i in range(0, len(delete_ids_vc), batch_size):
                 batch_ids = list(delete_ids_vc)[i:i+batch_size]
                 vector_store.delete(batch_ids)
@@ -280,6 +282,8 @@ def update(repo_path, latest_commit):
         try:
             if len(documents_vc) > chroma_client.get_max_batch_size():
                 batch_size = 4000
+            else:
+                batch_size = len(documents_vc)
             for i in range(0, len(documents_vc), batch_size):
                 batch_documents = documents_vc[i:i+batch_size]
                 batch_ids = id_vc[i:i+batch_size]
