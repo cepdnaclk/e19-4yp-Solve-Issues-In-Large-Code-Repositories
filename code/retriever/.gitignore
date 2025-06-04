@@ -7,6 +7,7 @@ chroma_db
 *.pkl
 django_file_ids.json
 embedding_based_retrievals.json
+retriever-out.json
 *.log
 *.prof
 *.diff
