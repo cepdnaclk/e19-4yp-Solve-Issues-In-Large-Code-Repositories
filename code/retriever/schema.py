@@ -43,3 +43,14 @@ class SuspiciousFileReasoningOutput(BaseModel):
         ...,
         description="A list of suspicious files with reasoning for each."
     )
+
+class SuspiciousFileDeepReasoning(BaseModel):
+    file: str = Field(..., description="The path to the suspicious file.")
+    confidence: int = Field(..., description="Confidence out of 100 to say the file is suspicious.")
+    reason: str = Field(..., description="The reasoning behind selecting this file as suspicious and giving such a confidence score out of 100.")
+
+class SuspiciousFileDeepReasoningOutput(BaseModel):
+    suspicious_files: List[SuspiciousFileDeepReasoning] = Field(
+        ...,
+        description="A list of suspicious files with a confidence score and deep reasoning for each."
+    )

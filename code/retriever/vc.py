@@ -22,9 +22,10 @@ from utils.compress import get_skeleton
 from utils.chunk import SimpleFixedLengthChunker
 from utils.utils import serialize_dict_to_json
 from dotenv import load_dotenv
+from utils import utils
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
@@ -34,41 +35,38 @@ def build(name):
     id = 0
     ids = []
     chunker = SimpleFixedLengthChunker()
-    for root,dir, files in os.walk(name):
+    for root, dir, files in os.walk(name):
         for file in files:
-            if file.endswith(".py"):
-                full_name = root + "/" + file
-                if "tests" in full_name.split("/") or "test" in full_name.split("/"):
-                    # print(full_name)
-                    continue
-                try:
-                    with open(f"{root}/{file}", "r") as f:
-                        content = f.read()
-                    chunks = chunker.chunk_file(code=content)
-                    if chunks:
-                        chunk_ids = []
-                        for chunk in chunks:
-                            doc = Document(page_content=chunk, metadata={"filename": f"{root}/{file}"})
-                            documents.append(doc)
-                            id += 1
-                            ids.append(str(id))
-                            chunk_ids.append(str(id))
-                        result[f"{root}/{file}"] = ":".join(chunk_ids)
-                    else:
-                        raise ValueError("Empty chunks array in vc.py at line:56 ...")
-
-                    # sketch = get_skeleton(content, keep_constant = True, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
-                    # if sketch:
-                    #     # print(sketch)
-                    #     doc = Document(page_content= sketch, metadata = {"filename": f"{root}/{file}"})
-                    #     documents.append(doc)
-                    #     id += 1
-                    #     ids.append(str(id))
-                    # else:
-                    #     print(sketch)
-                    
-                except Exception as e:
-                    print(f"[!] Not an error but the file '{root}/{file}' seems to be empty which leads to: {e}")
+            full_name = root + "/" + file
+            if utils.is_invalid_path(full_name):
+                # print(full_name)
+                continue
+            try:
+                with open(f"{root}/{file}", "r") as f:
+                    content = f.read()
+                chunks = chunker.chunk_file(code=content)
+                if chunks:
+                    chunk_ids = []
+                    for chunk in chunks:
+                        doc = Document(page_content=chunk, metadata={"filename": f"{root}/{file}"})
+                        documents.append(doc)
+                        id += 1
+                        ids.append(str(id))
+                        chunk_ids.append(str(id))
+                    result[f"{root}/{file}"] = ":".join(chunk_ids)
+                else:
+                    raise ValueError("Empty chunks array in vc.py at line:56 ...")
+                # sketch = get_skeleton(content, keep_constant = True, keep_indent=True, total_lines =30, prefix_lines=15,suffix_lines=10)
+                # if sketch:
+                #     # print(sketch)
+                #     doc = Document(page_content= sketch, metadata = {"filename": f"{root}/{file}"})
+                #     documents.append(doc)
+                #     id += 1
+                #     ids.append(str(id))
+                # else:
+                #     print(sketch)
+            except Exception as e:
+                print(f"[!] Not an error but the file '{root}/{file}' seems to be empty which leads to: {e}")
     
     result["max_id"] = id
     serialize_dict_to_json(result, f"{name}_file_ids.json")

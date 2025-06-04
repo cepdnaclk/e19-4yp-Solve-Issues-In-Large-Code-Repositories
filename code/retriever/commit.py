@@ -26,6 +26,8 @@ from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 # from langchain_community.vectorstores import FAISS
+from concurrent.futures import ThreadPoolExecutor
+import threading
 
 
 def neighbors_by_relation(G, node, relation_type):
@@ -117,6 +119,9 @@ def save_graph(graph, pickle_path):
 
 def checkout_commit(repo_path, base_commit):
     repo = git.Repo(repo_path)
+    # Discard uncommitted changes and remove untracked files
+    repo.git.reset('--hard')
+    repo.git.clean('-fdx')  # -f: force, -d: remove dirs, -x: remove ignored files too
     repo.git.checkout(base_commit)
     print(f"Checked out to {base_commit}")
     
@@ -202,18 +207,17 @@ def update(repo_path, latest_commit):
     delete_ids_vc = deque([])
 
     for file in deleted_files:
-        if not file.endswith(".py"):
+        if utils.is_invalid_path(file):
             continue
         delete_node_and_edges(graph, file)
         if file in file_ids:
             ids = file_ids[file]
             del file_ids[file]
-            for i in ids.split(":"):
-                delete_ids_vc.append(i)
+            delete_ids_vc.extend(ids.split(":"))
 
     if delete_ids_vc:
-        batch_ids = []
         try:
+            batch_ids = []
             if len(delete_ids_vc) > chroma_client.get_max_batch_size():
                 batch_size = 4000
             else:
@@ -230,36 +234,41 @@ def update(repo_path, latest_commit):
     
     documents_vc = [] 
     id_vc = []
-    # max_id = max(int(num) for val in file_ids.values() for num in val.split(":")) + 1
     max_id = file_ids["max_id"] + 1
+    id_lock = threading.Lock()
+
+    def process_chunk(chunk):
+        nonlocal max_id
+        doc = Document(page_content=chunk, metadata={"filename": file_path})
+        with id_lock:
+            if delete_ids_vc:
+                id = delete_ids_vc.popleft()
+            else:
+                id = max_id
+                max_id += 1
+        return str(id), doc
+    
     for file_path in added_files:
-        if not file_path.endswith(".py"):
+        if utils.is_invalid_path(file_path):
             continue
-        name = file.split("/")[-1].split(".")[0]
+        name = file_path.split("/")[-1].split(".")[0]
         # print(repo_path+file)
-        insert_edge(graph, "module_"+name, file, relation="path", node_type_v="full_path", node_type_u="module_name")
+        insert_edge(graph, "module_"+name, file_path, relation="path", node_type_v="full_path", node_type_u="module_name")
         try:
             # TODO: Use Multi Threding to Chunk each File Parallely
             chunker = SimpleFixedLengthChunker()
             with open(file_path, "r") as f:
                 content = f.read()
             if content:
-                if "tests" in file_path.split("/") or "test" in file_path.split("/"):
-                    # print("from comit test")
-                    continue
                 chunks = chunker.chunk_file(code=content)
                 if chunks:
                     chunk_ids = []
-                    for chunk in chunks:
-                        doc = Document(page_content=chunk, metadata={"filename": file_path})
-                        if delete_ids_vc:
-                            id = delete_ids_vc.popleft()
-                        else:
-                            id = max_id
-                            max_id += 1
-                        chunk_ids.append(str(id))
+                    with ThreadPoolExecutor() as executor:
+                        results = executor.map(process_chunk, chunks)
+                    for id_str, doc in results:
+                        id_vc.append(id_str)
                         documents_vc.append(doc)
-                        id_vc.append(str(id))
+                        chunk_ids.append(id_str)
                     file_ids[file_path] = ":".join(chunk_ids)
         except Exception as e:
             print(f"[!] Error adding file '{file_path}': {e}")
