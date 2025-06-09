@@ -9,6 +9,7 @@ venv/
 
 # Django FAISS index folders
 django_*_faiss_index/
+django_faiss_index/
 
 # Environment files
 .env
@@ -16,3 +17,5 @@ django_*_faiss_index/
 # General Django project folders (optional, if all follow django_X pattern)
 django/
 django_[1-5]/
+testbed/
+
