@@ -10,6 +10,7 @@ venv/
 # Django FAISS index folders
 django_*_faiss_index/
 django_faiss_index/
+chroma_db/
 
 # Environment files
 .env
