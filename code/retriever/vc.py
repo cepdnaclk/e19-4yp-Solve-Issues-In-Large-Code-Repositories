@@ -17,7 +17,7 @@ from langchain_core.documents import Document
 from utils.embed_skeleton import get_skeleton
 from utils.utils import serialize_dict_to_json
 import os
-
+from utils import utils
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 load_dotenv()
@@ -40,7 +40,8 @@ def build(name):
         for file in files:
             if file.endswith(".py"):
                 full_name = root + "/" + file
-                if "tests" in full_name.split("/") or "test" in full_name.split("/"):
+                if utils.is_invalid_path(full_name):
+                # print(full_name)
                     continue
                 try:
                     with open(f"{root}/{file}", "r") as f:

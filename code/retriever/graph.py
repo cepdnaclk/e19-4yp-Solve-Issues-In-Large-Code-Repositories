@@ -103,7 +103,7 @@ def build_dependency_graph(repo_path, class_function_map):
         imports = extract_imports(file_path, class_function_map)
         for imp in imports:
             graph.add_edge(file_path, imp, relation = 'imports')
-    print("imp gra", graph)
+    # print("imp gra", graph)
     for key in file_map:
         graph.add_node("module_"+key, type='module_name')
         for full_path in file_map[key]:
@@ -147,7 +147,7 @@ def built(repo_path):
 
 # Run on a repository
 repo_path = repo_name
-graph = built(repo_path)
+# graph = built(repo_path)
 
 
 

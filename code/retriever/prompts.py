@@ -235,3 +235,36 @@ Candidate Files (with initial reasoning):
 '''
     )
 ])
+
+prompt_embedding_retriver = ChatPromptTemplate.from_messages([
+        (
+            "system",
+            '''You are a expert in generating descriptions including both text and codes that are simantically similar to the given description.'''),
+        (
+            "human",
+            '''### **Given GitHub issue description**:
+     
+```{problem_description}```
+
+`With the help of above description generate 15 simantically similar descriptions.`
+'''
+        )
+])
+
+
+
+prompt_extract_reasoning = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are an AI assistant specialized in analyzing technical reports to identify root causes of bugs in code repositories.
+        You will extract a structured list of files with their confidence scores and reasoning based on the provided analysis.
+        '''
+    ),
+    (
+        "human",
+        '''
+        ```{analysis}```
+        
+        '''
+    )
+])

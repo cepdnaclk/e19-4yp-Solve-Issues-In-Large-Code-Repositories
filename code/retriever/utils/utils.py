@@ -50,3 +50,12 @@ def deserialize_json_to_dict(filename: str) -> dict:
     """
     with open(filename, 'r') as f:
         return json.load(f)
+
+def is_invalid_path(file_path):
+    """
+    Check if the file path provided is useful to be analysed or added to the dependecy graph.
+    Modify this when you want to change the logic.
+    """
+    return not file_path.endswith(".py") or \
+            "tests" in file_path.split("/") or \
+                "test" in file_path.split("/")
