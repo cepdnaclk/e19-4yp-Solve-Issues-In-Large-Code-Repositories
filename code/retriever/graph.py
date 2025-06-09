@@ -27,13 +27,15 @@ def serialize_function_or_class():
                                 class_func_dict[node.name] = []
                             class_func_dict[node.name].append(file_path)
                 except Exception as e:
-                    print(f"Error reading {file_path}: {e}")
+                    pass
+                    # print(f"Error reading {file_path}: {e}")
     # serialize.serialize_dict_to_json(class_func_dict, f"class_func_dict_{repo_name}.json")
     return class_func_dict
 
 def find_function_or_class(path, name, class_function_map):
     if name in class_function_map:
         for p in class_function_map[name]:
+            
             if p.startswith(path):
                 return p
     return 
@@ -139,7 +141,7 @@ def built(repo_path):
             # print(file_path)
             graph.add_edge("class_"+name, file_path, relation = 'class_path')
     
-    print(graph)
+    # print(graph)
     with open(f"graph_{repo_name}.pkl", "wb") as f:
        pickle.dump(graph, f)
     return graph

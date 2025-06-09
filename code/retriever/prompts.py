@@ -98,13 +98,12 @@ suspicious_files_filter_list_usingclfn_prompt = ChatPromptTemplate.from_messages
   - A list of class or function names within that file
 - A GitHub issue description
 
-Your task is to return a **list of file paths** that are most likely responsible for the issue.
+Your task is to return a **list of file paths** that are possible to responsible for the issue.
 
 Instructions:
 - Analyze the problem description.
-- Examine the file paths and their contents.
-- Identify only the files that are likely connected to the issue.
-- Omit unrelated or non-suspicious files.
+- Examine the classes and function names in each file with problem description.
+- Omit only unrelated or non-suspicious files.
 '''
     ),
     (

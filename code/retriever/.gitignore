@@ -1,5 +1,18 @@
-django
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+
+# Django FAISS index folders
+django_*_faiss_index/
+
+# Environment files
 .env
-django_faiss_index
-__pycache__
-venv
+
+# General Django project folders (optional, if all follow django_X pattern)
+django/
+django_[1-5]/
