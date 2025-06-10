@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pickle
 
-repo_name = "django"
+repo_name = "sphinx-doc"
 
 def get_rel_fname(fname, root):
     return os.path.relpath(fname, root)
@@ -148,9 +148,9 @@ def built(repo_path):
 
 
 # Run on a repository
-repo_path = repo_name
+# repo_path = repo_name
 # graph = built(repo_path)
-
+# print(graph)
 
 
 def neighbors_by_relation(G, node, relation_type):

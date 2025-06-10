@@ -65,6 +65,6 @@ def build(name):
     vector_store.save_local(f"{name}_faiss_index")
                     
 if __name__ == "__main__":
-    build("django")
+    build("sphinx-doc")
 
     
