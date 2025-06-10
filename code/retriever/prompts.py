@@ -177,7 +177,7 @@ suspicious_files_with_reason_prompt = ChatPromptTemplate.from_messages([
     - Examine the provided code skeletons.
     - Identify files that are highly likely to contain the root cause.
     - For each suspicious file, explain your reasoning.
-    - Do not include less confodent files files.
+
 
         
         '''
@@ -245,7 +245,7 @@ prompt_embedding_retriver = ChatPromptTemplate.from_messages([
      
 ```{problem_description}```
 
-`With the help of above description generate 15 simantically similar descriptions.`
+`With the help of above description generate 15 similar descriptions.`
 '''
         )
 ])

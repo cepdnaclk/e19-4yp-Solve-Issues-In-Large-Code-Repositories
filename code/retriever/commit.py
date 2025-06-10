@@ -246,10 +246,10 @@ def update(repo_path, latest_commit):
         #     if not i.endswith(".py"):
         #         continue
         #     insert_edge(graph, file_path, i, relation="imports", node_type_v="full_path", node_type_u="full_path")
-    if documents_vc and id_vc:
-        vector_store.add_documents(documents=documents_vc, ids=id_vc)
-        vector_store.save_local(f"{repo_name}_faiss_index")
-        utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
+    # if documents_vc and id_vc:
+    #     vector_store.add_documents(documents=documents_vc, ids=id_vc)
+    #     vector_store.save_local(f"{repo_name}_faiss_index")
+    #     utils.serialize_dict_to_json(file_ids, f"{repo_name}_file_ids.json")
     # remove_isolated_nodes(graph)         
     print(graph_old)
     graph_new = graph.built(repo_name)

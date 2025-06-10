@@ -1,0 +1,93 @@
+
+
+0. Correct file found: django/django/core/validators.py 1
+
+1. Correct file found: django/django/db/migrations/serializer.py 1
+
+2. django/django/db/models/query_utils.py 1
+
+3. Correct file found: django/django/utils/autoreload.py 1
+
+4. Correct file found: django/django/forms/models.py 2
+
+5. Correct file found: django/django/db/migrations/serializer.py 1
+
+6. Correct file found: django/db/migrations/executor.py 2
+
+7. Correct file found: django/django/db/models/lookups.py 4
+
+8. Correct file found: django/django/utils/numberformat.py 1
+
+9. Correct file found: django/utils/autoreload.py 1
+
+10. Correct file found: django/django/db/migrations/autodetector.py 1
+
+11. Correct file found: django/django/db/backends/sqlite3/creation.py 2
+
+12. Correct file found: django/django/views/debug.py 3
+
+13. Correct file found: django/django/forms/formsets.py 1
+
+14. no file found for 14------------------------------------------------------------
+
+15. Correct file found: django/django/contrib/auth/forms.py 1
+
+16. Correct file found: django/contrib/admin/sites.py 1
+
+17. Correct file found: django/db/models/base.py 2
+
+18. Correct file found: django/django/utils/decorators.py 1
+
+19. Correct file found: django/django/db/migrations/serializer.py 1
+
+20. Correct file found: django/django/db/migrations/operations/fields.py 1
+
+21. Correct file found: django/django/template/autoreload.py 2
+
+22. Correct file found: django/django/db/models/lookups.py 1
+
+23. Correct file found: django/django/db/models/expressions.py 1
+
+24. Correct file found: django/django/contrib/syndication/views.py 1
+
+25. Correct file found: django/django/db/models/deletion.py 1
+
+26. Correct file found: django/django/core/management/base.py 1
+
+27. no file found for 27----------------------------------------------------------
+
+28. Correct file found: django/django/contrib/admin/options.py 1
+
+29.Correct file found: django/django/db/models/fields/__init__.py 1
+
+30. Correct file found: django/django/forms/models.py 2
+
+31. Correct file found: django/django/db/models/base.py 2
+
+32. Correct file found: django/django/db/migrations/operations/models.py 3
+
+33. Correct file found: django/django/db/backends/base/schema.py 1
+
+34. Correct file found: django/django/db/models/fields/related.py 1
+
+35. Correct file found: django/django/contrib/auth/tokens.py 1
+
+36. Correct file found: django/django/urls/resolvers.py 1
+
+37. Correct file found: django/django/forms/models.py 1
+
+38. Correct file found: django/django/core/management/commands/shell.py 1
+
+39. Correct file found: django/contrib/admin/templatetags/admin_modify.py 1
+
+40. Correct file found: django/django/core/management/commands/inspectdb.py 1
+
+41. no file found for 41------------------------------------------------
+
+42. Correct file found: django/django/db/models/sql/query.py 2
+
+43. Correct file found: django/django/views/debug.py 1
+
+44. Correct file found: django/django/core/management/commands/sqlmigrate.py 1
+
+45. no file found for 45-------------------------------------------
