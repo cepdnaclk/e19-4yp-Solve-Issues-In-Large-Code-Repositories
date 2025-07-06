@@ -376,3 +376,38 @@ learn_from_experience_prompt = ChatPromptTemplate.from_messages([
         '''
     )
 ])
+
+action_analysis_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''
+        You are an expert code debugger and problem solver. Your task is to analyze the provided skeleton code, issue description, actions taken, and relevant output to identify what went wrong and suggest the next suitable steps to resolve the issue.
+        '''
+    ),
+    (
+        "human",
+        '''
+        ### Inputs:
+    1. **Skeleton Code**:
+    ```
+    {skeleton_code}
+    ```
+
+    2. **Issue Description**:
+    {issue_description}
+
+    3. **Actions Taken**:
+    {actions_taken}
+
+
+    ### Task:
+    - Analyze the skeleton code, issue description, actions taken, and relevant output.
+    - Identify the root cause of the issue based on the provided information.
+    - For each action taken, evaluate its effectiveness and explain why it did or did not help resolve the issue.
+    - Provide a clear explanation of what went wrong in the code or process.
+    - Suggest the next suitable steps to resolve the issue, including specific code changes or debugging strategies if applicable.
+    - Ensure the suggestions are actionable, precise, and tailored to the provided context.
+            
+        '''
+    )
+])

@@ -71,12 +71,14 @@ model_learn = llm_o4.bind(
 )
 experience_get_chain = prompts.learn_from_experience_prompt | model_learn
 
+analyze_chain = prompts.action_analysis_prompt | llm_o4
+
 candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
               {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
 class ReactCodeAgent:
     def __init__(self, llm_model="gpt-4.1", index=0, candidates=candidates, max_steps=20):
         self.llm = ChatOpenAI(model=llm_model)
-        self.max_steps_before_analysis = 10
+        self.max_steps_before_analysis =4 
         self.max_steps = max_steps
         self.terminal = self._initialize_terminal()
         self.graph = self._build_graph()
@@ -146,7 +148,7 @@ class ReactCodeAgent:
         skeleton = generate_code_skeleton(file_path, start=-1, end=-1)
         window_ans = window_select_chain.invoke({"issue_description": issue_description, "code_skeleton": skeleton})
         window_ans = json.loads(window_ans.additional_kwargs["function_call"]["arguments"])
-        skeleton = generate_code_skeleton("testbed/django/django/core/validators.py", start=window_ans['start_line'], end=window_ans['end_line'])
+        skeleton = generate_code_skeleton("testbed/"+file_path, start=window_ans['start_line'], end=window_ans['end_line'])
         
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
@@ -158,6 +160,7 @@ class ReactCodeAgent:
             "experience": [],
             "actions": []
         })
+        return updated_state
         
         
     
@@ -168,27 +171,27 @@ class ReactCodeAgent:
         
         # Add nodes
         workflow.add_node("start", self.start)
-        workflow.add_node("edit_file", self.execute_code_tool)
-        workflow.add_node("learn_from_execution", self.learn_from_execution)
-        workflow.add_node("analyze_memory", self.analyze_action)
-        workflow.add_node("decide_next_action", self.decide_next_action)
+        workflow.add_node("edit", self.edit)
+        workflow.add_node("analyze", self.analyze_action)
+        workflow.add_node("next_candidate", self.get_next_candidate)
+       
         
         # Define the flow
         workflow.set_entry_point("start")
-        workflow.add_edge("start", "edit_file")
-        workflow.add_edge("edit_code", "learn_from_execution")
-        workflow.add_edge("learn_from_execution", "decide_next_action")
+        workflow.add_edge("start", "edit")
+        workflow.add_edge("analyze", "edit")
+        workflow.add_edge("next_candidate", "start")
         
-        # Conditional edges from decide_next_action
         workflow.add_conditional_edges(
-            "decide_next_action",
-            self.should_analyze,
-            {
-                "analyze": "analyze_memory",
-                "continue": "edit_file",
-                "end": END
-            }
-        )
+        source="edit",
+        path=lambda x: x["next"],  # Use the 'next' field to determine routing
+        path_map={
+            "CONTINUE": "edit",
+            "ANALYZE": "analyze",
+            "NEXT": "next_candidate",
+            "END": END
+        }
+    )
         
         workflow.add_edge("analyze_memory", "edit_file")
         
@@ -229,8 +232,10 @@ class ReactCodeAgent:
             "experience": state['experience']+[exp['learning_experience']],
             "actions": state["actions"]+[{"action": edit_ans, "output": output}],
         })
-        if exp['next_step'] == "end" or updated_state["step_count"]>self.max_steps:
+        if exp['next_step'] == "end":
             next_step = "END"
+        elif updated_state["step_count"]>self.max_steps:
+            next_step = "NEXT"
         elif updated_state['step_count']>self.max_steps_before_analysis:
             next_step = "ANALYZE"
         else:
@@ -239,55 +244,25 @@ class ReactCodeAgent:
             "state": updated_state,
             "next": next_step
         }
+        
+    def analyze_action(self, state: AgentState) -> AgentState:
+        instruct = analyze_chain.invoke({
+            "issue_description": state['issue_description'],
+            "skeleton_code": state['skeleton_code'],
+            "actions": state['actions'],
+        })
+        updated_state = state.copy()  # Create a copy to avoid mutating the input directly
+        updated_state.update({
+            "experience": [instruct],
+            "actions": []
+        })
+        return updated_state
     
-    async def decide_next_action(self, state: AgentState) -> AgentState:
-        """Decide what to do next based on current state"""
-        print("🤔 Deciding next action...")
-        
-        # Simple decision logic - can be enhanced with LLM
-        current_execution = state['current_execution']
-        
-        if current_execution and current_execution.success:
-            print("✅ Last execution successful - continuing")
-        else:
-            print("❌ Last execution failed - need to adjust strategy")
-        
+    def get_next_candidate(self, state: AgentState) -> AgentState:
+        self.candidate_count += 1
         return state
     
-    def should_analyze(self, state: AgentState) -> str:
-        """Determine if we should analyze memory or continue"""
-        if state['step_count'] >= self.max_steps_before_analysis:
-            print(f"📈 Reached {self.max_steps_before_analysis} steps - triggering analysis")
-            return "analyze"
-        elif state['step_count'] > 20:  # Max total steps
-            return "end"
-        else:
-            return "continue"
     
-    def _apply_code_changes(self, skeleton_code: str, deleted_lines: List[str], added_lines: List[str]) -> str:
-        """Apply code changes to the skeleton code"""
-        lines = skeleton_code.split('\n')
-        
-        # Remove deleted lines
-        for deleted_line in deleted_lines:
-            lines = [line for line in lines if line.strip() != deleted_line.strip()]
-        
-        # Add new lines (simple append for now - can be enhanced)
-        for added_line in added_lines:
-            lines.append(added_line)
-        
-        return '\n'.join(lines)
-    
-    async def _execute_command(self, command: str, code_content: str) -> tuple[str, bool, Optional[str]]:
-        """Execute the main command with the modified code"""
-        file_path = "tagent/example.py"
-        try:
-           with open(file_path, 'r') as f:
-                lines = f.readlines()
-           
-                
-        except Exception as e:
-            return "Error retry might help but not sure"
         
     async def run_agent(self, skeleton_code: str, issue_description: str, 
                        initial_execution: Optional[Dict] = None) -> Dict:
