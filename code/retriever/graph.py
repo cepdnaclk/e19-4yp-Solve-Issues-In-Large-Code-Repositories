@@ -5,7 +5,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import pickle
 
-repo_name = "sphinx-doc"
+repo_name = "django"
 
 def get_rel_fname(fname, root):
     return os.path.relpath(fname, root)

@@ -267,3 +267,112 @@ prompt_extract_reasoning = ChatPromptTemplate.from_messages([
         '''
     )
 ])
+
+#####################Agent ##############
+# from langchain.prompts import PromptTemplate
+file_edit_template = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        ''' You are an expert Software Engineer Specialized in solving github issues. Given a skeleton code file, issue description and a hint,  
+        you need to generate the file operations (deletions, insertions, and main code additions(for testing))  required to fix the issue.'''
+
+),
+    (
+        "human",
+    '''
+       SKELETON CODE:
+    ```python
+    {skeleton_code}
+    ```
+
+    ISSUE DESCRIPTION:
+    ```{issue_description}```
+    
+    HINT:
+    ```{hint}```
+
+    INSTRUCTIONS:
+    1. Analyze the skeleton code and the issue description
+    2. Determine which lines need to be deleted  to solve the issue
+    3. Determine what new lines need to be inserted and where to solve the issue
+    4. Determine what main code block should be added at the end to verify the issue is resolved
+    5. Provide clear reasoning for your changes
+    6. Think about syntax correctness of the coded after delete and insert operations.
+
+
+    EXAMPLE OUTPUT FORMAT:
+    - deleted: [(2, 8), (5, 5)] means delete lines 2-3 and line 5
+    - inserted: [(1, "new line"), (4, "line1\\nline2")] means insert at line 1 and insert two lines at line 4
+    - main_code: the code block for the main section
+
+
+    Generate the file operations:
+'''
+        
+    )])
+
+
+window_select_template = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''
+            You are an expert code analyst tasked with identifying specific code windows (line ranges) that need to be examined to solve a given issue.
+        '''
+    ),
+    (
+        "human",
+        '''
+        Given the following issue description and numbered skeleton code, identify the 
+        **most suspicious code windows** that need to be examined to solve the issue.
+
+        ISSUE DESCRIPTION:
+        ```{issue_description}```
+        
+        
+        NUMBERED CODE SKELETON:
+        ```{code_skeleton}```
+
+        INSTRUCTIONS:
+        - Analyze the issue description and the numbered skeleton code carefully.
+        - Identify specific line ranges in the code that are likely related to the issue.
+        - Provide a single large window (start line number and end line number) that covers the suspicious code sections that needs to be fix.
+        
+        '''
+    )
+])
+
+learn_from_experience_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are an expert software engineering mentor analyzing a code modification attempt to extract valuable learning insights.
+        Your goal is to help developers learn from both successful and failed attempts'''
+    ),
+    (
+        "human",
+        '''
+        ISSUE DESCRIPTION:
+    {issue_description}
+
+    ORIGINAL CODE SKELETON (before modifications):
+    {skeleton_code}
+
+    ATTEMPTED CHANGES:
+    {changes_dictionary}
+
+    EXECUTION RESULT/OUTPUT:
+    {execution_output}
+    
+    ANALYSIS TASK:
+    1. Determine whether this attempt fully resolved the issue.
+    - If you are confident it is fixed, set `next_step` to `"end"`.
+    - Otherwise, set `next_step` to `"continue"`.
+
+    2. Provide `learning_experience` from the actions taken:
+    - These are concise lessons, insights, or debugging principles learned from this specific attempt.
+    - Include technical insights, observed pitfalls, and what should be done differently in future attempts.
+
+   
+        
+        '''
+    )
+])

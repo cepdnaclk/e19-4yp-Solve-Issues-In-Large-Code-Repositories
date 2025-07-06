@@ -40,7 +40,6 @@ class BashSession:
                 output = self.child.before
                 self.child.sendline(f'export PS1="{self.prompt}"')
                 self.child.expect_exact(self.prompt, timeout=timeout)
-                self.child.setecho(False)
             else:
                 self.child.expect_exact(self.prompt, timeout=timeout)
                 output = self.child.before.lstrip("\r\n")  # strip leading newline(s)

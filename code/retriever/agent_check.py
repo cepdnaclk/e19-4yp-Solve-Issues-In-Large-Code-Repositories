@@ -1,0 +1,371 @@
+import json
+import asyncio
+from typing import Dict, List, Any, Optional, TypedDict
+from dataclasses import dataclass, asdict
+from datetime import datetime
+import subprocess
+from utils.utils import generate_code_skeleton
+from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain_openai import ChatOpenAI  # or your preferred LLM
+from langchain.utils.openai_functions import convert_pydantic_to_openai_function
+from sandbox import bash_session, docker_build
+import os
+import tempfile
+from pathlib import Path
+from git import Repo
+from sandbox.specs import (
+    MAP_REPO_TO_REQS_PATHS,
+    MAP_REPO_VERSION_TO_SPECS_PY,
+)
+import prompts, schema
+from datasets import load_dataset
+import json
+from utils.utils import apply_changes_to_file
+
+dataset = load_dataset("lahirum/SWE_Experimental", split="train")
+# @dataclass
+# class CodeExecution:
+#     """Represents a code execution event"""
+#     deleted_lines: List[str]
+#     added_lines: List[str]
+#     main_command: str
+#     output: str
+   
+
+# @dataclass
+# class LearningMemory:
+#     """Stores what the agent learns from each execution"""
+#     insights: List[str]
+
+
+class AgentState(TypedDict):
+    """State of the React agent"""
+    skeleton_code: str
+    file_path: str
+    hint: str
+    issue_description: str
+    step_count: int
+    experience: List[str]
+    actions: List[Dict[str, Any]]
+
+llm_o4 = ChatOpenAI(
+    model="o4-mini",
+)
+model_window_select = llm_o4.bind(
+    functions=[convert_pydantic_to_openai_function(schema.CodeWindow)],
+    function_call="auto",
+)
+window_select_chain = prompts.window_select_template | model_window_select
+
+model_edit = llm_o4.bind(
+    functions=[convert_pydantic_to_openai_function(schema.FileOperations)],
+    function_call="auto",
+)
+file_edit_chain = prompts.file_edit_template | model_edit
+
+model_learn = llm_o4.bind(
+    functions=[convert_pydantic_to_openai_function(schema.ResolutionFeedback)],
+    function_call="auto",
+)
+experience_get_chain = prompts.learn_from_experience_prompt | model_learn
+
+candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
+              {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
+class ReactCodeAgent:
+    def __init__(self, llm_model="gpt-4.1", index=0, candidates=candidates, max_steps=20):
+        self.llm = ChatOpenAI(model=llm_model)
+        self.max_steps_before_analysis = 10
+        self.max_steps = max_steps
+        self.terminal = self._initialize_terminal()
+        self.graph = self._build_graph()
+        self.index = index
+        self.candidates = candidates
+        self.candidate_count = 1
+        self.llm_o4 = ChatOpenAI(model="o4-mini")
+        
+        
+    
+    def _initialize_terminal(self):
+        bash = bash_session.BashSession()
+        specs = MAP_REPO_VERSION_TO_SPECS_PY[dataset[self.index]['repo']][dataset[self.index]['version']]
+        host_dir = os.path.abspath(".") + "/testbed"
+        container_dir = "/testbed"
+        
+        if "pre_install" in specs:
+            pre_install_commands = "\n".join(specs["pre_install"])
+        else:
+            pre_install_commands = ""
+        dockerfile_str = docker_build.generate_dockerfile_packages(
+            python_version= specs["python"],
+            pre_install= pre_install_commands,      
+        )
+        name = dataset[self.index]['instance_id'].split("__")[0]
+        version = dataset[self.index]['version']
+        commit_id = dataset[self.index]['base_commit']
+        repo = Repo(name)
+        print(repo.git.reset('--hard', commit_id))
+        bash.run_command(f"rm -rf testbed/{name}")
+        bash.run_command(f"mkdir testbed/agent")
+        bash.run_command(f"cp -r {name} testbed")
+        bash.run_command(f"cp -r {name} testbed/agent")
+
+        tmpdir = tempfile.mkdtemp()
+        Path(f"{tmpdir}/Dockerfile").write_text(dockerfile_str)
+        print(f"Generated Dockerfile for {name}_{version}")
+        bash.run_command(f"docker build -t swe-ubuntu-base {tmpdir}")
+
+        bash.run_command(f"docker run --mount type=bind,src={host_dir},dst={container_dir} -it swe-ubuntu-base bash", new_env=True, timeout=250)
+        bash.run_command(f"source /opt/miniconda3/bin/activate py_{specs['python']}")
+        bash.run_command(f"cd {name}")
+        if "pip_packages" in specs:
+            pip_packages = " ".join(specs["pip_packages"])
+            bash.run_command(f"pip install {pip_packages}")
+        
+        if "install" in specs:
+            bash.run_command(specs["install"])
+        if "packages" in specs:
+            if not specs["packages"].startswith("requiremen"):
+                bash.run_command(f"pip install {specs['packages']}")
+            else:
+                if dataset[self.index]['repo'] in MAP_REPO_TO_REQS_PATHS:
+                    requirements_path = MAP_REPO_TO_REQS_PATHS[dataset[self.index]['repo']]
+                    requirements_path = " ".join(requirements_path)
+                else:
+                    requirements_path = specs['packages']
+                bash.run_command(f"pip install -r {requirements_path}")
+        
+        bash.run_command("cd ..")           
+        return bash
+    
+    def start(self, state: AgentState) -> AgentState:
+        file_path = self.candidates[self.candidate_count-1]['file']
+        issue_description = dataset[self.index]["problem_statement"]
+        hint = self.candidate_count[self.candidate_count-1]['reason']
+        skeleton = generate_code_skeleton(file_path, start=-1, end=-1)
+        window_ans = window_select_chain.invoke({"issue_description": issue_description, "code_skeleton": skeleton})
+        window_ans = json.loads(window_ans.additional_kwargs["function_call"]["arguments"])
+        skeleton = generate_code_skeleton("testbed/django/django/core/validators.py", start=window_ans['start_line'], end=window_ans['end_line'])
+        
+        updated_state = state.copy()  # Create a copy to avoid mutating the input directly
+        updated_state.update({
+            "skeleton_code": skeleton,
+            "file_path": file_path,
+            "hint": hint,
+            "issue_description": issue_description,
+            "step_count": 0,  # Increment step_count or initialize to 1
+            "experience": [],
+            "actions": []
+        })
+        
+        
+    
+    
+    def _build_graph(self) -> StateGraph:
+        """Build the LangGraph workflow"""
+        workflow = StateGraph(AgentState)
+        
+        # Add nodes
+        workflow.add_node("start", self.start)
+        workflow.add_node("edit_file", self.execute_code_tool)
+        workflow.add_node("learn_from_execution", self.learn_from_execution)
+        workflow.add_node("analyze_memory", self.analyze_action)
+        workflow.add_node("decide_next_action", self.decide_next_action)
+        
+        # Define the flow
+        workflow.set_entry_point("start")
+        workflow.add_edge("start", "edit_file")
+        workflow.add_edge("edit_code", "learn_from_execution")
+        workflow.add_edge("learn_from_execution", "decide_next_action")
+        
+        # Conditional edges from decide_next_action
+        workflow.add_conditional_edges(
+            "decide_next_action",
+            self.should_analyze,
+            {
+                "analyze": "analyze_memory",
+                "continue": "edit_file",
+                "end": END
+            }
+        )
+        
+        workflow.add_edge("analyze_memory", "edit_file")
+        
+        return workflow.compile()
+
+    def edit(self, state: AgentState) -> Dict[str, Any]:
+        edit_ans = file_edit_chain.invoke({
+        "issue_description": state['issue_description'],
+        "skeleton_code": state['skeleton'],
+        "hint": state['hint'],
+        })
+        edit_ans = json.loads(edit_ans.additional_kwargs["function_call"]["arguments"])
+        inserted = []
+        for added in edit_ans['inserted']:
+            inserted.append((int(added['line_num']), added['content']))
+        deleted = []
+        for dele in edit_ans['deleted']:
+            deleted.append((int(dele['start']), int(dele['end'])))
+        apply_changes_to_file(
+            file_path="testbed/agent/"+state['file_path'],
+            inserted=inserted,
+            deleted=deleted,
+            main_code=edit_ans['main_code'],
+        )
+        
+        output = self.terminal.run_command("python agent/"+state['file_path'], timeout=5000)
+        
+        exp = experience_get_chain.invoke({
+            "issue_description": state['issue_description'],
+            "skeleton_code": state['skeleton_code'],
+            "changes_dictionary": edit_ans,
+            "execution_output": output
+        })
+        exp = json.loads(exp.additional_kwargs["function_call"]["arguments"])
+        updated_state = state.copy()  # Create a copy to avoid mutating the input directly
+        updated_state.update({
+            "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
+            "experience": state['experience']+[exp['learning_experience']],
+            "actions": state["actions"]+[{"action": edit_ans, "output": output}],
+        })
+        if exp['next_step'] == "end" or updated_state["step_count"]>self.max_steps:
+            next_step = "END"
+        elif updated_state['step_count']>self.max_steps_before_analysis:
+            next_step = "ANALYZE"
+        else:
+            next_step = "CONTINUE"
+        return {
+            "state": updated_state,
+            "next": next_step
+        }
+    
+    async def decide_next_action(self, state: AgentState) -> AgentState:
+        """Decide what to do next based on current state"""
+        print("🤔 Deciding next action...")
+        
+        # Simple decision logic - can be enhanced with LLM
+        current_execution = state['current_execution']
+        
+        if current_execution and current_execution.success:
+            print("✅ Last execution successful - continuing")
+        else:
+            print("❌ Last execution failed - need to adjust strategy")
+        
+        return state
+    
+    def should_analyze(self, state: AgentState) -> str:
+        """Determine if we should analyze memory or continue"""
+        if state['step_count'] >= self.max_steps_before_analysis:
+            print(f"📈 Reached {self.max_steps_before_analysis} steps - triggering analysis")
+            return "analyze"
+        elif state['step_count'] > 20:  # Max total steps
+            return "end"
+        else:
+            return "continue"
+    
+    def _apply_code_changes(self, skeleton_code: str, deleted_lines: List[str], added_lines: List[str]) -> str:
+        """Apply code changes to the skeleton code"""
+        lines = skeleton_code.split('\n')
+        
+        # Remove deleted lines
+        for deleted_line in deleted_lines:
+            lines = [line for line in lines if line.strip() != deleted_line.strip()]
+        
+        # Add new lines (simple append for now - can be enhanced)
+        for added_line in added_lines:
+            lines.append(added_line)
+        
+        return '\n'.join(lines)
+    
+    async def _execute_command(self, command: str, code_content: str) -> tuple[str, bool, Optional[str]]:
+        """Execute the main command with the modified code"""
+        file_path = "tagent/example.py"
+        try:
+           with open(file_path, 'r') as f:
+                lines = f.readlines()
+           
+                
+        except Exception as e:
+            return "Error retry might help but not sure"
+        
+    async def run_agent(self, skeleton_code: str, issue_description: str, 
+                       initial_execution: Optional[Dict] = None) -> Dict:
+        """Run the agent with given inputs"""
+        print("🚀 Starting React Code Agent...")
+        
+        # Initialize state
+        initial_state = {
+            'messages': [],
+            'skeleton_code': skeleton_code,
+            'issue_description': issue_description,
+            'executions': [],
+            'memory': [],
+            'step_count': 0,
+            'analysis_results': []
+        }
+        
+        # Run the graph
+        config = {"configurable": {"thread_id": "react-agent-session"}}
+        
+        try:
+            final_state = None
+            async for state in self.graph.astream(initial_state, config):
+                print(f"Current state keys: {list(state.keys())}")
+                final_state = state
+            
+            return final_state
+            
+        except Exception as e:
+            print(f"❌ Agent execution failed: {e}")
+            return initial_state
+
+
+# Example usage
+async def main():
+    """Example of how to use the React Code Agent"""
+    agent = ReactCodeAgent()
+    
+    # Sample skeleton code
+    skeleton_code = """
+def calculate_fibonacci(n):
+    # TODO: Implement fibonacci calculation
+    pass
+
+def main():
+    result = calculate_fibonacci(10)
+    print(f"Fibonacci result: {result}")
+
+if __name__ == "__main__":
+    main()
+    """
+    
+    issue_description = "Implement fibonacci calculation function that works correctly"
+    
+    # Sample initial execution
+    initial_execution = {
+        'deleted_lines': ['    pass'],
+        'added_lines': [
+            '    if n <= 1:',
+            '        return n',
+            '    return calculate_fibonacci(n-1) + calculate_fibonacci(n-2)'
+        ],
+        'main_command': 'python {file}'
+    }
+    
+    # Run the agent
+    result = await agent.run_agent(skeleton_code, issue_description, initial_execution="")
+    
+    print("\n" + "="*50)
+    print("🎯 FINAL RESULTS:")
+    print(f"Total executions: {len(result.get('executions', []))}")
+    print(f"Memory entries: {len(result.get('memory', []))}")
+    print(f"Analysis results: {len(result.get('analysis_results', []))}")
+    
+    if result.get('analysis_results'):
+        print("\nLatest Analysis:")
+        print(result['analysis_results'][-1][:300] + "...")
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
