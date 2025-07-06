@@ -47,6 +47,7 @@ class AgentState(TypedDict):
     hint: str
     issue_description: str
     step_count: int
+    candiate_count: int
     experience: List[str]
     actions: List[Dict[str, Any]]
 
@@ -77,15 +78,15 @@ candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 're
               {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
 class ReactCodeAgent:
     def __init__(self, llm_model="gpt-4.1", index=0, candidates=candidates, max_steps=20):
-        self.llm = ChatOpenAI(model=llm_model)
+        # self.llm = ChatOpenAI(model=llm_model)
         self.max_steps_before_analysis =4 
         self.max_steps = max_steps
         self.terminal = self._initialize_terminal()
         self.graph = self._build_graph()
         self.index = index
         self.candidates = candidates
-        self.candidate_count = 1
-        self.llm_o4 = ChatOpenAI(model="o4-mini")
+        # self.candidate_count = 1
+        # self.llm_o4 = ChatOpenAI(model="o4-mini")
         
         
     
@@ -142,11 +143,11 @@ class ReactCodeAgent:
         return bash
     
     def start(self, state: AgentState) -> AgentState:
-        file_path = self.candidates[self.candidate_count-1]['file']
-        issue_description = dataset[self.index]["problem_statement"]
-        hint = self.candidate_count[self.candidate_count-1]['reason']
+        file_path = self.candidates[state['candiate_count']]['file']
+        # issue_description = dataset[state["candiate_count"]]["problem_statement"]
+        hint = self.candidate_count[state['candiate_count']]['reason']
         skeleton = generate_code_skeleton(file_path, start=-1, end=-1)
-        window_ans = window_select_chain.invoke({"issue_description": issue_description, "code_skeleton": skeleton})
+        window_ans = window_select_chain.invoke({"issue_description": state['issue_description'], "code_skeleton": skeleton})
         window_ans = json.loads(window_ans.additional_kwargs["function_call"]["arguments"])
         skeleton = generate_code_skeleton("testbed/"+file_path, start=window_ans['start_line'], end=window_ans['end_line'])
         
@@ -155,8 +156,7 @@ class ReactCodeAgent:
             "skeleton_code": skeleton,
             "file_path": file_path,
             "hint": hint,
-            "issue_description": issue_description,
-            "step_count": 0,  # Increment step_count or initialize to 1
+            "step_count": 0, # Increment step_count or initialize to 1
             "experience": [],
             "actions": []
         })
@@ -235,7 +235,10 @@ class ReactCodeAgent:
         if exp['next_step'] == "end":
             next_step = "END"
         elif updated_state["step_count"]>self.max_steps:
-            next_step = "NEXT"
+            if state["candiate_count"]<len(self.candidates):
+                next_step = "NEXT"
+            else:
+                next_step = "END"
         elif updated_state['step_count']>self.max_steps_before_analysis:
             next_step = "ANALYZE"
         else:
@@ -259,25 +262,32 @@ class ReactCodeAgent:
         return updated_state
     
     def get_next_candidate(self, state: AgentState) -> AgentState:
-        self.candidate_count += 1
-        return state
+        updated_state = state.copy()  # Create a copy to avoid mutating the input directly
+        updated_state.update({
+            "candiate_count": state['candiate_count'] + 1,
+        })
+        return updated_state
     
     
         
-    async def run_agent(self, skeleton_code: str, issue_description: str, 
-                       initial_execution: Optional[Dict] = None) -> Dict:
+    def run_agent(self, index=0, candidates = ""):
         """Run the agent with given inputs"""
         print("🚀 Starting React Code Agent...")
+        self.index = index
+        if not candidates:
+            self.candidates = candidates
+        issue_description = dataset[self.index]["problem_statement"]
         
         # Initialize state
         initial_state = {
-            'messages': [],
-            'skeleton_code': skeleton_code,
-            'issue_description': issue_description,
-            'executions': [],
-            'memory': [],
-            'step_count': 0,
-            'analysis_results': []
+            "skeleton_code": "",
+            "file_path": "",
+            "hint": "",
+            "issue_description": issue_description,
+            "step_count": 0,  # Increment step_count or initialize to 1
+            "candidate_count": 0,
+            "experience": [],
+            "actions": []
         }
         
         # Run the graph
@@ -285,7 +295,7 @@ class ReactCodeAgent:
         
         try:
             final_state = None
-            async for state in self.graph.astream(initial_state, config):
+            for state in self.graph.stream(initial_state, config):
                 print(f"Current state keys: {list(state.keys())}")
                 final_state = state
             
@@ -296,51 +306,3 @@ class ReactCodeAgent:
             return initial_state
 
 
-# Example usage
-async def main():
-    """Example of how to use the React Code Agent"""
-    agent = ReactCodeAgent()
-    
-    # Sample skeleton code
-    skeleton_code = """
-def calculate_fibonacci(n):
-    # TODO: Implement fibonacci calculation
-    pass
-
-def main():
-    result = calculate_fibonacci(10)
-    print(f"Fibonacci result: {result}")
-
-if __name__ == "__main__":
-    main()
-    """
-    
-    issue_description = "Implement fibonacci calculation function that works correctly"
-    
-    # Sample initial execution
-    initial_execution = {
-        'deleted_lines': ['    pass'],
-        'added_lines': [
-            '    if n <= 1:',
-            '        return n',
-            '    return calculate_fibonacci(n-1) + calculate_fibonacci(n-2)'
-        ],
-        'main_command': 'python {file}'
-    }
-    
-    # Run the agent
-    result = await agent.run_agent(skeleton_code, issue_description, initial_execution="")
-    
-    print("\n" + "="*50)
-    print("🎯 FINAL RESULTS:")
-    print(f"Total executions: {len(result.get('executions', []))}")
-    print(f"Memory entries: {len(result.get('memory', []))}")
-    print(f"Analysis results: {len(result.get('analysis_results', []))}")
-    
-    if result.get('analysis_results'):
-        print("\nLatest Analysis:")
-        print(result['analysis_results'][-1][:300] + "...")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
