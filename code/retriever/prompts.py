@@ -290,9 +290,12 @@ file_edit_template = ChatPromptTemplate.from_messages([
     
     HINT:
     ```{hint}```
+    
+    INSTRUCTIONS:
+    ```{instructions}
 
     INSTRUCTIONS:
-    1. Analyze the skeleton code and the issue description
+    1. Analyze the skeleton code and the issue description, hint and instructions
     2. Determine which lines need to be deleted  to solve the issue
     3. Determine what new lines need to be inserted and where to solve the issue
     4. Determine what main code block should be added at the end to verify the issue is resolved
@@ -305,8 +308,6 @@ file_edit_template = ChatPromptTemplate.from_messages([
     - inserted: [(1, "new line"), (4, "line1\\nline2")] means insert at line 1 and insert two lines at line 4
     - main_code: the code block for the main section
 
-
-    Generate the file operations:
 '''
         
     )])
@@ -367,9 +368,9 @@ learn_from_experience_prompt = ChatPromptTemplate.from_messages([
     - If you are confident it is fixed, set `next_step` to `"end"`.
     - Otherwise, set `next_step` to `"continue"`.
 
-    2. Provide `learning_experience` from the actions taken:
-    - These are concise lessons, insights, or debugging principles learned from this specific attempt.
-    - Include technical insights, observed pitfalls, and what should be done differently in future attempts.
+    2. Provide `learning_experience` from the actions taken and Instruction for next step to solve the issue:
+    - These are concise lessons or  insights learned from this specific attempt.
+    - Include instruction for next step to solve the issue.
 
    
         

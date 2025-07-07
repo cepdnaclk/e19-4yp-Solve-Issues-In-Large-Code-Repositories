@@ -1,3 +1,5 @@
+
+
 import json
 import asyncio
 from typing import Dict, List, Any, Optional, TypedDict
@@ -22,7 +24,8 @@ from sandbox.specs import (
 import prompts, schema
 from datasets import load_dataset
 import json
-from utils.utils import apply_changes_to_file
+from utils.utils import apply_changes_to_file, remove_main_code, read_patch_as_string, apply_patch_string
+import ast
 
 dataset = load_dataset("lahirum/SWE_Experimental", split="train")
 # @dataclass
@@ -48,8 +51,11 @@ class AgentState(TypedDict):
     issue_description: str
     step_count: int
     candiate_count: int
-    experience: List[str]
+    experience: str
     actions: List[Dict[str, Any]]
+    patch: str
+    failed_pass_to_pass: List[str]
+    failed_fail_to_pass: List[str]
 
 llm_o4 = ChatOpenAI(
     model="o4-mini",
@@ -76,8 +82,8 @@ analyze_chain = prompts.action_analysis_prompt | llm_o4
 
 candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
               {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
-class ReactCodeAgent:
-    def __init__(self, llm_model="gpt-4.1", index=0, candidates=candidates, max_steps=20):
+class CodeAgent:
+    def __init__(self, index=0, candidates=candidates, max_steps=20):
         # self.llm = ChatOpenAI(model=llm_model)
         self.max_steps_before_analysis =4 
         self.max_steps = max_steps
@@ -85,6 +91,7 @@ class ReactCodeAgent:
         self.graph = self._build_graph()
         self.index = index
         self.candidates = candidates
+        
         # self.candidate_count = 1
         # self.llm_o4 = ChatOpenAI(model="o4-mini")
         
@@ -109,7 +116,8 @@ class ReactCodeAgent:
         commit_id = dataset[self.index]['base_commit']
         repo = Repo(name)
         print(repo.git.reset('--hard', commit_id))
-        bash.run_command(f"rm -rf testbed/{name}")
+        bash.run_command("rm -rf testbed")
+        bash.run_command("mkdir testbed")
         bash.run_command(f"mkdir testbed/agent")
         bash.run_command(f"cp -r {name} testbed")
         bash.run_command(f"cp -r {name} testbed/agent")
@@ -157,7 +165,7 @@ class ReactCodeAgent:
             "file_path": file_path,
             "hint": hint,
             "step_count": 0, # Increment step_count or initialize to 1
-            "experience": [],
+            "experience": "No instruction yet",
             "actions": []
         })
         return updated_state
@@ -174,6 +182,7 @@ class ReactCodeAgent:
         workflow.add_node("edit", self.edit)
         workflow.add_node("analyze", self.analyze_action)
         workflow.add_node("next_candidate", self.get_next_candidate)
+        workflow.add_node("test", self.test)
        
         
         # Define the flow
@@ -202,6 +211,7 @@ class ReactCodeAgent:
         "issue_description": state['issue_description'],
         "skeleton_code": state['skeleton'],
         "hint": state['hint'],
+        "instruction": state["experience"]
         })
         edit_ans = json.loads(edit_ans.additional_kwargs["function_call"]["arguments"])
         inserted = []
@@ -229,7 +239,7 @@ class ReactCodeAgent:
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
             "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
-            "experience": state['experience']+[exp['learning_experience']],
+            "experience": exp['learning_experience'],
             "actions": state["actions"]+[{"action": edit_ans, "output": output}],
         })
         if exp['next_step'] == "end":
@@ -256,15 +266,96 @@ class ReactCodeAgent:
         })
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
-            "experience": [instruct],
+            "experience": instruct,
             "actions": []
         })
         return updated_state
     
     def get_next_candidate(self, state: AgentState) -> AgentState:
+        self.max_steps = max(4, self.max_steps-4)
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
             "candiate_count": state['candiate_count'] + 1,
+        })
+        return updated_state
+    
+    def test(self, state: AgentState) -> AgentState:
+        fail_to_pass = dataset[self.index]['FAIL_TO_PASS']
+        fail_to_pass = ast.literal_eval(fail_to_pass)
+        pass_to_pass = dataset[self.index]['PASS_TO_PASS']
+        pass_to_pass = ast.literal_eval(pass_to_pass)
+        name = dataset[self.index]['instance_id'].split("__")[0]
+        test_patch = dataset[self.index]['test_patch']
+        remove_main_code("testbed/agent/"+state['file_path'])
+        bash = bash_session.BashSession()
+        bash.run_command(f"cp testbed/agent/{state['file_path']} testbed/{state['file_path']}")
+        bash.run_command(f"git add testbed/{state['file_path']}")
+        bash.run_command("git diff --cached > testbed/change.patch")
+        bash.close()
+        generated_patch = read_patch_as_string(f"testbed/{state['file_path']}")
+        failed_pass_to_pass = []
+        failed_fail_to_pass = []
+        self.terminal.run_command(f"cd {name}")
+        
+        specs = MAP_REPO_VERSION_TO_SPECS_PY[dataset[self.index]['repo']][dataset[self.index]['version']]
+        count = 0
+        skip_count = 0
+        for pas in pass_to_pass:
+            te = pas.split("(")
+            
+            if len(te) != 2:
+                skip_count += 1
+                continue
+            if not te[1].endswith(")"):
+                # print("Skipping malformed test:", pas)
+                skip_count += 1
+                continue
+            
+            res = self.terminal.run_command(f"{specs['test_cmd']} {te[1][:len(te[1])-1].strip()}")
+            res = res.strip().split("\n")
+            found = False
+            for r in res:
+                if r.startswith(te[0].strip()):
+                    if r.split("...")[1].strip().startswith("ok"):
+                        print("Test passed:", r)
+                        count += 1
+                        found= True
+                        break
+            if not found:
+                failed_pass_to_pass.append(pas)
+                # print("Test failed:", res)
+        apply_patch_string(test_patch, f"testbed/{name}")   
+        count = 0
+        skip_count = 0
+        for pas in fail_to_pass:
+            te = pas.split("(")
+            
+            if len(te) != 2:
+                skip_count += 1
+                continue
+            if not te[1].endswith(")"):
+                # print("Skipping malformed test:", pas)
+                skip_count += 1
+                continue
+            
+            res = self.terminal.run_command(f"{specs['test_cmd']} {te[1][:len(te[1])-1].strip()}")
+            res = res.strip().split("\n")
+            found = False
+            for r in res:
+                if r.startswith(te[0].strip()):
+                    if r.split("...")[1].strip().startswith("ok"):
+                        print("Test passed:", r)
+                        count += 1
+                        found= True
+                        break
+            if not found:
+                failed_fail_to_pass.append(pas)
+        
+        updated_state = state.copy()  # Create a copy to avoid mutating the input directly
+        updated_state.update({
+            "patch": generated_patch,
+            "failed_pass_to_pass": failed_pass_to_pass,
+            "failed_fail_to_pass": failed_fail_to_pass,
         })
         return updated_state
     
@@ -274,6 +365,7 @@ class ReactCodeAgent:
         """Run the agent with given inputs"""
         print("🚀 Starting React Code Agent...")
         self.index = index
+        
         if not candidates:
             self.candidates = candidates
         issue_description = dataset[self.index]["problem_statement"]
@@ -287,7 +379,11 @@ class ReactCodeAgent:
             "step_count": 0,  # Increment step_count or initialize to 1
             "candidate_count": 0,
             "experience": [],
-            "actions": []
+            "actions": [],
+            "patch":"",
+            "failed_pass_to_pass": [],
+            "failed_fail_to_pass": []
+        
         }
         
         # Run the graph
@@ -296,7 +392,8 @@ class ReactCodeAgent:
         try:
             final_state = None
             for state in self.graph.stream(initial_state, config):
-                print(f"Current state keys: {list(state.keys())}")
+                print(f"🔄 Current state: {state}")
+                # print(f"Current state keys: {list(state.keys())}")
                 final_state = state
             
             return final_state
@@ -306,3 +403,11 @@ class ReactCodeAgent:
             return initial_state
 
 
+if __name__ == "__main__":
+    agent = ReactCodeAgent(index=0)
+    final_state = agent.run_agent(index=0, candidates=candidates)
+    print(f"Final state: {final_state}")
+    
+    # Example of how to use the test method
+    # test_state = agent.test(final_state)
+    # print(f"Test state: {test_state}")

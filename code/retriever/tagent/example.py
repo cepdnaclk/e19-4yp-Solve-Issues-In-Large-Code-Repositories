@@ -133,9 +133,6 @@ class URLValidator(RegexValidator):
                 raise ValidationError(self.message, code=self.code, params={'value': value})
             host_match = re.search(r'^\[(.+)\](?::\d{1,5})?$', netloc)
 
-
-            else:
-                raise
         else:
             # Now verify IPv6 in the netloc part
             host_match = re.search(r'^\[(.+)\](?::\d{1,5})?$', parsed_url.netloc)
@@ -574,35 +571,4 @@ if __name__ == '__main__':
         print('Test failed: No ValidationError raised for invalid URL')
     except ValidationError as e:
         print('Test passed: ValidationError raised as expected:', e)
-if __name__ == '__main__':
-    from django.core.validators import URLValidator
-    from django.core.exceptions import ValidationError
-    validator = URLValidator()
-    test_url = '////]@N.AN'
-    try:
-        validator(test_url)
-    except ValidationError:
-        print('Correctly raised ValidationError for', test_url)
-    else:
-        print('Error: ValueError was not caught')
-if __name__ == '__main__':
-    # Test the URLValidator directly
-    from django.core.validators import URLValidator
-    from django.core.exceptions import ValidationError
-    validator = URLValidator()
-    test_value = '////]@N.AN'
-    try:
-        validator(test_value)
-    except ValidationError:
-        print("ValidationError raised as expected for", test_value)
-    else:
-        print("No ValidationError for", test_value)
-    # Test URLField.clean behavior
-    from django.forms.fields import URLField
-    field = URLField()
-    try:
-        field.clean(test_value)
-    except ValidationError:
-        print("URLField.clean raised ValidationError as expected for", test_value)
-    else:
-        print("URLField.clean did not raise ValidationError for", test_value)
+

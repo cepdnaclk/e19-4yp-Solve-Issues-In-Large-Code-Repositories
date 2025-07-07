@@ -187,3 +187,65 @@ def apply_changes_to_file(file_path, deleted, inserted, main_code):
         print(f"Error: File {file_path} not found")
     except Exception as e:
         print(f"Error processing file: {e}")
+        
+def remove_main_code(file_path):
+    
+    try:
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+        
+        lines = [line.rstrip('\n') for line in lines]
+        
+        while lines:
+            if lines[-1].startswith("if __name__"):
+                lines.pop()
+                break
+            lines.pop()
+            
+        if lines:
+            with open(file_path, 'w') as f:
+                for line in lines:
+                    f.write(line + '\n')
+            
+        
+
+        
+                
+        print(f"Successfully applied changes to {file_path}")
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found")
+    except Exception as e:
+        print(f"Error processing file: {e}")
+        
+
+def read_patch_as_string(patch_path):
+    with open(patch_path, 'r', encoding='utf-8') as f:
+        patch_str = f.read()
+    return patch_str
+
+
+import subprocess
+import tempfile
+
+def apply_patch_string(patch_str, repo_path='.'):
+    # Create a temporary patch file
+    with tempfile.NamedTemporaryFile(mode='w+', suffix='.patch', delete=False) as temp_patch:
+        temp_patch.write(patch_str)
+        temp_patch_path = temp_patch.name
+
+    # Run `git apply` on the patch
+    result = subprocess.run(
+        ['git', 'apply', temp_patch_path],
+        cwd=repo_path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    if result.returncode == 0:
+        print("✅ Patch applied successfully.")
+    else:
+        print("❌ Failed to apply patch:")
+        print(result.stderr)
+
+    return result.returncode == 0  # Returns True if successful
