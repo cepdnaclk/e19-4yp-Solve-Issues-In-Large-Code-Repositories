@@ -329,13 +329,16 @@ window_select_template = ChatPromptTemplate.from_messages([
         ISSUE DESCRIPTION:
         ```{issue_description}```
         
+        HINT
+        ```{hint}```
+        
         
         NUMBERED CODE SKELETON:
         ```{code_skeleton}```
 
         INSTRUCTIONS:
-        - Analyze the issue description and the numbered skeleton code carefully.
-        - Identify specific line ranges in the code that are likely related to the issue.
+        - Analyze the issue description, Hint  and the numbered skeleton code carefully.
+        - Identify specific line ranges in the code that are likely related to the issue by thinking carefully after observing hint issue descriptio  and skeleton code"
         - Provide a single large window (start line number and end line number) that covers the suspicious code sections that needs to be fix.
         
         '''

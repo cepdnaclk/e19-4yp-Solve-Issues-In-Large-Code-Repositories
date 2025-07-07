@@ -87,10 +87,11 @@ class CodeAgent:
         # self.llm = ChatOpenAI(model=llm_model)
         self.max_steps_before_analysis =4 
         self.max_steps = max_steps
-        self.terminal = self._initialize_terminal()
-        self.graph = self._build_graph()
         self.index = index
         self.candidates = candidates
+        self.terminal = self._initialize_terminal()
+        self.graph = self._build_graph()
+        
         
         # self.candidate_count = 1
         # self.llm_o4 = ChatOpenAI(model="o4-mini")
@@ -153,9 +154,9 @@ class CodeAgent:
     def start(self, state: AgentState) -> AgentState:
         file_path = self.candidates[state['candiate_count']]['file']
         # issue_description = dataset[state["candiate_count"]]["problem_statement"]
-        hint = self.candidate_count[state['candiate_count']]['reason']
+        hint = self.candidates[state['candiate_count']]['reason']
         skeleton = generate_code_skeleton(file_path, start=-1, end=-1)
-        window_ans = window_select_chain.invoke({"issue_description": state['issue_description'], "code_skeleton": skeleton})
+        window_ans = window_select_chain.invoke({"issue_description": state['issue_description'], "code_skeleton": skeleton, "hint": hint+"------------------"+state['experience']})
         window_ans = json.loads(window_ans.additional_kwargs["function_call"]["arguments"])
         skeleton = generate_code_skeleton("testbed/"+file_path, start=window_ans['start_line'], end=window_ans['end_line'])
         
@@ -165,7 +166,7 @@ class CodeAgent:
             "file_path": file_path,
             "hint": hint,
             "step_count": 0, # Increment step_count or initialize to 1
-            "experience": "No instruction yet",
+            "experience": "",
             "actions": []
         })
         return updated_state
@@ -190,6 +191,7 @@ class CodeAgent:
         workflow.add_edge("start", "edit")
         workflow.add_edge("analyze", "edit")
         workflow.add_edge("next_candidate", "start")
+        workflow.add_edge("test", END)
         
         workflow.add_conditional_edges(
         source="edit",
@@ -198,20 +200,23 @@ class CodeAgent:
             "CONTINUE": "edit",
             "ANALYZE": "analyze",
             "NEXT": "next_candidate",
-            "END": END
+            "END": "test"
         }
     )
         
-        workflow.add_edge("analyze_memory", "edit_file")
         
         return workflow.compile()
 
     def edit(self, state: AgentState) -> Dict[str, Any]:
+        if not state['experience']:
+            exp = "no experience yet"
+        else:
+            exp = state['experience']
         edit_ans = file_edit_chain.invoke({
         "issue_description": state['issue_description'],
-        "skeleton_code": state['skeleton'],
+        "skeleton_code": state['skeleton_code'],
         "hint": state['hint'],
-        "instruction": state["experience"]
+        "instructions": exp
         })
         edit_ans = json.loads(edit_ans.additional_kwargs["function_call"]["arguments"])
         inserted = []
@@ -221,7 +226,8 @@ class CodeAgent:
         for dele in edit_ans['deleted']:
             deleted.append((int(dele['start']), int(dele['end'])))
         apply_changes_to_file(
-            file_path="testbed/agent/"+state['file_path'],
+            read_file_path= f"testbed/{state['file_path']}",
+            write_file_path="testbed/agent/"+state['file_path'],
             inserted=inserted,
             deleted=deleted,
             main_code=edit_ans['main_code'],
@@ -288,8 +294,11 @@ class CodeAgent:
         test_patch = dataset[self.index]['test_patch']
         remove_main_code("testbed/agent/"+state['file_path'])
         bash = bash_session.BashSession()
-        bash.run_command(f"cp testbed/agent/{state['file_path']} testbed/{state['file_path']}")
-        bash.run_command(f"git add testbed/{state['file_path']}")
+        bash.run_command("cd testbed")
+        bash.run_command(f"cp agent/{state['file_path']} {state['file_path']}")
+        bash.run_command(f"cd {name}")
+        relative_path = "/".join(state['file_path'].split("/")[1:])
+        bash.run_command(f"git add {relative_path}")
         bash.run_command("git diff --cached > testbed/change.patch")
         bash.close()
         generated_patch = read_patch_as_string(f"testbed/{state['file_path']}")
@@ -377,8 +386,8 @@ class CodeAgent:
             "hint": "",
             "issue_description": issue_description,
             "step_count": 0,  # Increment step_count or initialize to 1
-            "candidate_count": 0,
-            "experience": [],
+            "candiate_count": 0,
+            "experience": "",
             "actions": [],
             "patch":"",
             "failed_pass_to_pass": [],
@@ -404,7 +413,7 @@ class CodeAgent:
 
 
 if __name__ == "__main__":
-    agent = ReactCodeAgent(index=0)
+    agent = CodeAgent(index=0)
     final_state = agent.run_agent(index=0, candidates=candidates)
     print(f"Final state: {final_state}")
     

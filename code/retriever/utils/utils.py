@@ -168,17 +168,17 @@ def process_line_operations(lines, deleted, inserted, main_code):
     return result
 
 
-def apply_changes_to_file(file_path, deleted, inserted, main_code):
+def apply_changes_to_file(read_file_path, write_file_path, deleted, inserted, main_code):
     
     try:
-        with open(file_path, 'r') as f:
+        with open(read_file_path, 'r') as f:
             lines = f.readlines()
         
         lines = [line.rstrip('\n') for line in lines]
         
 
         result = process_line_operations(lines, deleted, inserted, main_code)
-        with open(file_path, 'w') as f:
+        with open(write_file_path, 'w') as f:
             for line in result:
                 f.write(line + '\n')
                 
