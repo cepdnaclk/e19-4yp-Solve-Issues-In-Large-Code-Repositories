@@ -11,7 +11,7 @@ from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI  # or your preferred LLM
-from langchain.utils.openai_functions import convert_pydantic_to_openai_function
+from langchain_core.utils.function_calling import convert_to_openai_function
 from sandbox import bash_session, docker_build
 import os
 import tempfile
@@ -24,8 +24,13 @@ from sandbox.specs import (
 import prompts, schema
 from datasets import load_dataset
 import json
-from utils.utils import apply_changes_to_file, remove_main_code, read_patch_as_string, apply_patch_string
+from utils.utils import apply_changes_to_file, remove_main_code, read_patch_as_string, apply_patch_string, add_main_code
 import ast
+from langgraph.types import Command
+from langchain_anthropic import ChatAnthropic
+from langchain_anthropic import convert_to_anthropic_tool
+from dotenv import load_dotenv
+load_dotenv()
 
 dataset = load_dataset("lahirum/SWE_Experimental", split="train")
 # @dataclass
@@ -45,7 +50,8 @@ dataset = load_dataset("lahirum/SWE_Experimental", split="train")
 
 class AgentState(TypedDict):
     """State of the React agent"""
-    skeleton_code: str
+    start_window: int
+    end_window: int
     file_path: str
     hint: str
     issue_description: str
@@ -57,28 +63,74 @@ class AgentState(TypedDict):
     failed_pass_to_pass: List[str]
     failed_fail_to_pass: List[str]
 
+llm_anthropic = ChatAnthropic(
+    model="claude-sonnet-4-20250514",
+    # temperature=0,
+    max_tokens= 3000,
+    max_retries=2,
+    #  thinking={"type": "enabled", "budget_tokens": 1800},
+)
+
+llm_gpt4 = ChatOpenAI(
+    model="gpt-4.1",
+    temperature=0,
+)
+
 llm_o4 = ChatOpenAI(
     model="o4-mini",
 )
+
+llm_mini = ChatOpenAI(
+    model="gpt-4.1-mini",
+    temperature=0,
+    #max_retries=2,
+)
+
 model_window_select = llm_o4.bind(
-    functions=[convert_pydantic_to_openai_function(schema.CodeWindow)],
+    functions=[convert_to_openai_function(schema.CodeWindow)],
     function_call="auto",
 )
 window_select_chain = prompts.window_select_template | model_window_select
 
-model_edit = llm_o4.bind(
-    functions=[convert_pydantic_to_openai_function(schema.FileOperations)],
+model_edit = llm_gpt4.bind(
+    functions=[convert_to_openai_function(schema.FileOperations)],
     function_call="auto",
 )
+# model_edit = llm_anthropic.bind_tools(
+#     tools=[convert_to_anthropic_tool(schema.FileOperations)],
+   
+# )
+model_extract_edit = llm_mini.bind(
+    functions=[convert_to_openai_function(schema.FileOperations)],
+    function_call="auto",
+)
+
+model_extract_main = llm_mini.bind(
+    functions=[convert_to_openai_function(schema.MainCode)],
+    function_call="auto",
+)
+
+
 file_edit_chain = prompts.file_edit_template | model_edit
+# file_edit_chain = prompts.file_edit_template | llm_anthropic
+# file_edit_extract_chain = prompts.prompt_extract_edit | model_extract_edit
 
 model_learn = llm_o4.bind(
-    functions=[convert_pydantic_to_openai_function(schema.ResolutionFeedback)],
+    functions=[convert_to_openai_function(schema.ResolutionFeedback)],
     function_call="auto",
 )
-experience_get_chain = prompts.learn_from_experience_prompt | model_learn
+model_next_step = llm_o4.bind(
+    functions=[convert_to_openai_function(schema.NextStepFeedback)],
+    function_call="auto",
+)
+experience_get_chain = prompts.learn_from_experience_prompt | llm_o4
 
 analyze_chain = prompts.action_analysis_prompt | llm_o4
+
+main_chain = prompts.main_code_template | llm_anthropic
+main_extract_chain = prompts.prompt_extract_main | model_extract_main
+next_step_chain = prompts.next_step_prompt | model_next_step
+
 
 candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
               {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
@@ -158,11 +210,24 @@ class CodeAgent:
         skeleton = generate_code_skeleton(file_path, start=-1, end=-1)
         window_ans = window_select_chain.invoke({"issue_description": state['issue_description'], "code_skeleton": skeleton, "hint": hint+"------------------"+state['experience']})
         window_ans = json.loads(window_ans.additional_kwargs["function_call"]["arguments"])
-        skeleton = generate_code_skeleton("testbed/"+file_path, start=window_ans['start_line'], end=window_ans['end_line'])
+    
+        skeleton = generate_code_skeleton("testbed/agent/"+file_path, start=max(window_ans['start_line']-25, 0), end=window_ans['end_line']+25)
+        main_code = main_chain.invoke({
+            "issue_description": state['issue_description'],
+            "skeleton_code": skeleton,
+            "hint": hint,
+        })
+        main_code = main_extract_chain.invoke({
+            "main_code": main_code
+        })
+        main_code = json.loads(main_code.additional_kwargs["function_call"]["arguments"])
+        main_code = main_code['main_code']
+        add_main_code("testbed/agent/"+file_path, main_code)
         
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
-            "skeleton_code": skeleton,
+            "start_window": window_ans['start_line'],
+            "end_window": window_ans['end_line'],
             "file_path": file_path,
             "hint": hint,
             "step_count": 0, # Increment step_count or initialize to 1
@@ -193,16 +258,16 @@ class CodeAgent:
         workflow.add_edge("next_candidate", "start")
         workflow.add_edge("test", END)
         
-        workflow.add_conditional_edges(
-        source="edit",
-        path=lambda x: x["next"],  # Use the 'next' field to determine routing
-        path_map={
-            "CONTINUE": "edit",
-            "ANALYZE": "analyze",
-            "NEXT": "next_candidate",
-            "END": "test"
-        }
-    )
+        # workflow.add_conditional_edges(
+        # source="edit",
+        # path=lambda x: x["next"],  # Use the 'next' field to determine routing
+        # path_map={
+        #     "CONTINUE": "edit",
+        #     "ANALYZE": "analyze",
+        #     "NEXT": "next_candidate",
+        #     "END": "test"
+        # }
+        # )
         
         
         return workflow.compile()
@@ -212,63 +277,88 @@ class CodeAgent:
             exp = "no experience yet"
         else:
             exp = state['experience']
+        skeleton = generate_code_skeleton("testbed/agent/"+state['file_path'], start=max(state['start_window']-25, 0), end=state['end_window'] +25)
         edit_ans = file_edit_chain.invoke({
         "issue_description": state['issue_description'],
-        "skeleton_code": state['skeleton_code'],
+        "skeleton_code": skeleton,
         "hint": state['hint'],
         "instructions": exp
         })
+        # edit_ans = file_edit_extract_chain.invoke({
+        #     "code_operation": edit_ans
+        # })
         edit_ans = json.loads(edit_ans.additional_kwargs["function_call"]["arguments"])
+        # edit_ans = edit_ans.content[1]['input']
+        # print(edit_ans)
+        # inserted =  edit_ans['inserted']
+        # deleted = ast.literal_eval(edit_ans['deleted'])
         inserted = []
         for added in edit_ans['inserted']:
             inserted.append((int(added['line_num']), added['content']))
         deleted = []
         for dele in edit_ans['deleted']:
             deleted.append((int(dele['start']), int(dele['end'])))
-        apply_changes_to_file(
-            read_file_path= f"testbed/{state['file_path']}",
+        offset = apply_changes_to_file(
+            read_file_path= f"testbed/agent/{state['file_path']}",
             write_file_path="testbed/agent/"+state['file_path'],
             inserted=inserted,
             deleted=deleted,
-            main_code=edit_ans['main_code'],
         )
         
         output = self.terminal.run_command("python agent/"+state['file_path'], timeout=5000)
+        skeleton = generate_code_skeleton("testbed/agent/"+state['file_path'], start=max(state['start_window']-25, 0), end=state['end_window'] +25+offset)
         
         exp = experience_get_chain.invoke({
             "issue_description": state['issue_description'],
-            "skeleton_code": state['skeleton_code'],
-            "changes_dictionary": edit_ans,
+            "skeleton_code": skeleton,
             "execution_output": output
         })
-        exp = json.loads(exp.additional_kwargs["function_call"]["arguments"])
+        next_step = next_step_chain.invoke({
+            "issue_description": state['issue_description'],
+            "skeleton_code": skeleton,
+            "execution_output": output          
+        })
+        next_step = json.loads(next_step.additional_kwargs["function_call"]["arguments"])
+        # exp = json.loads(exp.additional_kwargs["function_call"]["arguments"])
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
             "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
-            "experience": exp['learning_experience'],
+            "experience": exp.content,
             "actions": state["actions"]+[{"action": edit_ans, "output": output}],
+            "end_window": state['end_window'] + offset,
         })
-        if exp['next_step'] == "end":
+        if next_step['next_step'].lower() == "end":
             next_step = "END"
+            goto = "test"
         elif updated_state["step_count"]>self.max_steps:
             if state["candiate_count"]<len(self.candidates):
                 next_step = "NEXT"
+                goto = "next_candidate"
             else:
                 next_step = "END"
+                goto = "test"
         elif updated_state['step_count']>self.max_steps_before_analysis:
             next_step = "ANALYZE"
+            goto = "analyze"
         else:
             next_step = "CONTINUE"
-        return {
-            "state": updated_state,
-            "next": next_step
-        }
+            goto = "edit"
+        return Command(goto=goto, update = {
+            "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
+            "experience": exp.content,
+            "actions": state["actions"]+[{"action": edit_ans, "output": output}],
+        })
+        # return {
+        #     "state": updated_state,
+        #     "next": next_step
+        # }
         
     def analyze_action(self, state: AgentState) -> AgentState:
+        skeleton = generate_code_skeleton("testbed/"+state['file_path'], start=max(state['start_window']-25, 0), end=state['end_window'] +25)
         instruct = analyze_chain.invoke({
             "issue_description": state['issue_description'],
-            "skeleton_code": state['skeleton_code'],
-            "actions": state['actions'],
+            "skeleton_code": skeleton,
+            "actions_taken": state['actions'],
         })
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
@@ -299,7 +389,7 @@ class CodeAgent:
         bash.run_command(f"cd {name}")
         relative_path = "/".join(state['file_path'].split("/")[1:])
         bash.run_command(f"git add {relative_path}")
-        bash.run_command("git diff --cached > testbed/change.patch")
+        bash.run_command("git diff --cached > change.patch")
         bash.close()
         generated_patch = read_patch_as_string(f"testbed/{state['file_path']}")
         failed_pass_to_pass = []
@@ -381,7 +471,8 @@ class CodeAgent:
         
         # Initialize state
         initial_state = {
-            "skeleton_code": "",
+            "start_window": -1,
+            "end_window": -1,
             "file_path": "",
             "hint": "",
             "issue_description": issue_description,
@@ -412,11 +503,12 @@ class CodeAgent:
             return initial_state
 
 
-if __name__ == "__main__":
-    agent = CodeAgent(index=0)
-    final_state = agent.run_agent(index=0, candidates=candidates)
-    print(f"Final state: {final_state}")
+# if __name__ == "__main__":
+#     agent = CodeAgent(index=0)
+#     final_state = agent.run_agent(index=0, candidates=candidates)
+#     print(f"Final state: {final_state}")
     
-    # Example of how to use the test method
-    # test_state = agent.test(final_state)
-    # print(f"Test state: {test_state}")
+#     # Example of how to use the test method
+#     # test_state = agent.test(final_state)
+#     # print(f"Test state: {test_state}")
+    

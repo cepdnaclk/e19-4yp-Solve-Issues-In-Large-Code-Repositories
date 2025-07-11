@@ -78,9 +78,17 @@ def generate_code_skeleton(
         return f"Error: File not found - {file_path}"
     except Exception as e:
         return f"Error while reading file: {e}"
+    
+    main_found = False
 
     for idx, line in enumerate(lines, start=1):
         stripped = line.strip()
+        
+        if stripped.startswith("if __name__"):
+            main_found = True
+        if main_found:
+            skeleton_lines.append(f"{idx:4}: {line.rstrip()}")
+            continue
 
         # Basic structure: imports, class, def
         if (
@@ -98,7 +106,7 @@ def generate_code_skeleton(
     return "\n".join(skeleton_lines) if skeleton_lines else "No skeleton elements found."
 
 
-def process_line_operations(lines, deleted, inserted, main_code):
+def process_line_operations(lines, deleted, inserted):
   
     operations = [] 
     for start, end in deleted:
@@ -112,6 +120,9 @@ def process_line_operations(lines, deleted, inserted, main_code):
             })
   
     for line_num, content in inserted:
+        content  = content.split("\n")
+        content = [con.rstrip() for con in content ]
+        
         
        
         operations.append({
@@ -119,7 +130,7 @@ def process_line_operations(lines, deleted, inserted, main_code):
             'original_start': line_num, 
             'original_position': line_num,  # Keep original 1-indexed
             'position': line_num - 1,       # 0-indexed for processing
-            'content': content.split("\n")
+            'content': content
         })
     
     
@@ -134,11 +145,11 @@ def process_line_operations(lines, deleted, inserted, main_code):
             actual_start = op['start'] + offset
             actual_end = op['end'] + offset
     
-            # del result[actual_start:actual_end + 1]
-            result[actual_start] = ""
+            del result[actual_start:actual_end + 1]
+            # result[actual_start] = ""
             
             lines_deleted = (op['end'] - op['start'] + 1)
-            # offset -= lines_deleted
+            offset -= lines_deleted
             
         elif op['type'] == 'insert':
            
@@ -151,24 +162,24 @@ def process_line_operations(lines, deleted, inserted, main_code):
             else:
                 result.insert(actual_position, op['content'])
                 offset += 1
-    main_list = main_code.split("\n")
-    prefix_main = ""
-    main_list = [line for line in main_list if line.strip()]
-    if not main_list[0].strip().startswith("if __name__"):
-        result.insert(len(result), "if __name__ == '__main__':")
-        # result.append("\t"+main_list[0].strip())
-        prefix_main = "\t"
-    # else:
-    #     result.insert(len(result), main_list[0].strip())
-    for i in range(len(main_list)):
+    # main_list = main_code.split("\n")
+    # prefix_main = ""
+    # main_list = [line for line in main_list if line.strip()]
+    # if not main_list[0].strip().startswith("if __name__"):
+    #     result.insert(len(result), "if __name__ == '__main__':")
+    #     # result.append("\t"+main_list[0].strip())
+    #     prefix_main = "\t"
+    # # else:
+    # #     result.insert(len(result), main_list[0].strip())
+    # for i in range(len(main_list)):
         
-        result.append(prefix_main+main_list[i])
+    #     result.append(prefix_main+main_list[i])
     
     
-    return result
+    return result, offset
 
 
-def apply_changes_to_file(read_file_path, write_file_path, deleted, inserted, main_code):
+def apply_changes_to_file(read_file_path, write_file_path, deleted, inserted):
     
     try:
         with open(read_file_path, 'r') as f:
@@ -177,14 +188,15 @@ def apply_changes_to_file(read_file_path, write_file_path, deleted, inserted, ma
         lines = [line.rstrip('\n') for line in lines]
         
 
-        result = process_line_operations(lines, deleted, inserted, main_code)
+        result, offset = process_line_operations(lines, deleted, inserted)
         with open(write_file_path, 'w') as f:
             for line in result:
                 f.write(line + '\n')
                 
-        print(f"Successfully applied changes to {file_path}")
+        print(f"Successfully applied changes to {write_file_path}")
+        return offset
     except FileNotFoundError:
-        print(f"Error: File {file_path} not found")
+        print(f"Error: File {read_file_path} not found")
     except Exception as e:
         print(f"Error processing file: {e}")
         
@@ -206,9 +218,6 @@ def remove_main_code(file_path):
             with open(file_path, 'w') as f:
                 for line in lines:
                     f.write(line + '\n')
-            
-        
-
         
                 
         print(f"Successfully applied changes to {file_path}")
@@ -217,6 +226,36 @@ def remove_main_code(file_path):
     except Exception as e:
         print(f"Error processing file: {e}")
         
+def add_main_code(file_path, main_code):
+    
+    try:
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+        
+        lines = [line.rstrip('\n') for line in lines]
+        
+        
+        main_list = main_code.split("\n")
+        prefix_main = ""
+        main_list = [line for line in main_list if line.strip()]
+        # if not main_list[0].strip().startswith("if __name__"):
+        #     lines.append("if __name__ == '__main__':")
+        #     prefix_main = "\t"
+        for i in range(len(main_list)):
+            
+            lines.append(prefix_main+main_list[i])
+            
+        if lines:
+            with open(file_path, 'w') as f:
+                for line in lines:
+                    f.write(line + '\n')
+        
+                
+        print(f"Successfully applied changes to {file_path}")
+    except FileNotFoundError:
+        print(f"Error: File {file_path} not found")
+    except Exception as e:
+        print(f"Error processing file: {e}")
 
 def read_patch_as_string(patch_path):
     with open(patch_path, 'r', encoding='utf-8') as f:

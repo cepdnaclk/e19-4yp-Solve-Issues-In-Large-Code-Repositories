@@ -273,8 +273,8 @@ prompt_extract_reasoning = ChatPromptTemplate.from_messages([
 file_edit_template = ChatPromptTemplate.from_messages([
     (
         "system",
-        ''' You are an expert Software Engineer Specialized in solving github issues. Given a skeleton code file, issue description and a hint,  
-        you need to generate the file operations (deletions, insertions, and main code additions(for testing))  required to fix the issue.'''
+        ''' You are an expert Software Engineer Specialized in solving github issues. Given a skeleton code file, issue description and a hint, instructions  
+        you need to generate the file operations (deletions, insertions)  required to fix the issue.'''
 
 ),
     (
@@ -298,15 +298,16 @@ file_edit_template = ChatPromptTemplate.from_messages([
     1. Analyze the skeleton code and the issue description, hint and instructions
     2. Determine which lines need to be deleted  to solve the issue
     3. Determine what new lines need to be inserted and where to solve the issue
-    4. Determine what main code block should be added at the end to verify the issue is resolved
-    5. Provide clear reasoning for your changes
-    6. Think about syntax correctness of the coded after delete and insert operations.
+    4. Provide clear reasoning for your changes
+    5. Note that you can insert or delete multiple blocks of lines as necessary to solve the issue.
+    6. newly Inseted Code Should works for all possible inputs and need to handle errors as well.FOllow the same error handlings as in the orogonal code. Hence think carefully when applying code modifcations.
+    7. Think about syntax correctness of the coded after delete and insert operations and make sure to maintain correct indentations.
 
 
     EXAMPLE OUTPUT FORMAT:
     - deleted: [(2, 8), (5, 5)] means delete lines 2-3 and line 5
     - inserted: [(1, "new line"), (4, "line1\\nline2")] means insert at line 1 and insert two lines at line 4
-    - main_code: the code block for the main section
+    - reasoning: Summaey of what has done by editing
 
 '''
         
@@ -348,38 +349,58 @@ window_select_template = ChatPromptTemplate.from_messages([
 learn_from_experience_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
-        '''You are an expert software engineering mentor analyzing a code modification attempt to extract valuable learning insights.
-        Your goal is to help developers learn from both successful and failed attempts'''
+        '''You are an expert software engineering mentor. Your task is to analyze a code modification attempt based on the issue, code structure, and execution results.
+        Your goal is to provide clear, actionable instructions to guide the developer toward resolving the issue.'''
     ),
     (
         "human",
         '''
-        ISSUE DESCRIPTION:
+    ISSUE DESCRIPTION:
     {issue_description}
 
-    ORIGINAL CODE SKELETON (before modifications):
+    CODE SKELETON:
     {skeleton_code}
 
-    ATTEMPTED CHANGES:
-    {changes_dictionary}
-
-    EXECUTION RESULT/OUTPUT:
+    EXECUTION RESULT / OUTPUT:
     {execution_output}
-    
-    ANALYSIS TASK:
-    1. Determine whether this attempt fully resolved the issue.
-    - If you are confident it is fixed, set `next_step` to `"end"`.
-    - Otherwise, set `next_step` to `"continue"`.
 
-    2. Provide `learning_experience` from the actions taken and Instruction for next step to solve the issue:
-    - These are concise lessons or  insights learned from this specific attempt.
-    - Include instruction for next step to solve the issue.
-
-   
-        
+    TASK:
+    Carefully analyze the current implementation and its outcome. Identify what went wrong or what needs improvement.
+    Then, provide step-by-step guidance or suggestions to move closer to a correct solution.
         '''
     )
 ])
+
+next_step_prompt = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are an expert software engineering mentor. 
+        Your role is to evaluate a developer’s code modification attempt based on the issue, code skeleton, and the execution result.
+        Your goal is to determine whether the issue has been fully resolved or not.'''
+    ),
+    (
+        "human",
+        '''
+    ISSUE DESCRIPTION:
+    ```{issue_description}```
+
+    CODE SKELETON :
+    ```{skeleton_code}```
+
+    EXECUTION RESULT / OUTPUT:
+    ```{execution_output}```
+
+    TASK:
+    1. Analyze the output with code skeleton and Issue description
+    2. Decide whether the issue is fully and correctly resolved in all expected scenarios.
+
+    Instructions:
+    - If you are confident the issue is completely solved, set `next_step` to `"end"`.
+    - If further changes or are needed to resolve the issue for all cases, set `next_step` to `"continue"`.
+        '''
+    )
+])
+
 
 action_analysis_prompt = ChatPromptTemplate.from_messages([
     (
@@ -412,6 +433,77 @@ action_analysis_prompt = ChatPromptTemplate.from_messages([
     - Suggest the next suitable steps to resolve the issue, including specific code changes or debugging strategies if applicable.
     - Ensure the suggestions are actionable, precise, and tailored to the provided context.
             
+        '''
+    )
+])
+
+prompt_extract_edit = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are an AI assistant specialized in analyzing code operation to identify insert list , delete list, main code and reasoning.
+        You will extract a structured list of deleted list, inserted list, main code and reasoning based on the provided input.
+        make sure to preserve correct indentations and syntax in code.
+        '''
+    ),
+    (
+        "human",
+        '''
+        ```{code_operation}```
+        
+        '''
+    )
+])
+
+main_code_template = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        ''' You are an expert Software Engineer Specialized in test cases in if __name__ == '__main__ block. Given a skeleton code file, issue description 
+        and a hint.
+        you need to generate the test cases that coveres all possible test cases to confirm that issue has fixed. Also add test cases to validate all types of inputs
+        Issue you are solving is a large software system hence it should give valifd answers for all possiblle inputs including NUll or None inputs. Make sure to maintain syntax correctness. 
+        '''
+
+),
+    (
+        "human",
+    '''
+       SKELETON CODE:
+    ```python
+    {skeleton_code}
+    ```
+
+    ISSUE DESCRIPTION:
+    ```{issue_description}```
+    
+    HINT:
+    ```{hint}```
+    
+ 
+
+    INSTRUCTIONS:
+    1. Analyze the skeleton code and the issue description, hint and instructions
+    2. Determine what main code block should be added at the end to verify the issue is resolved
+    3. Consider all possible cases to verify that the issue is resolved, and include them in the main code. Note thatot is possible to have null or None vales or some variables"
+    4. All tests that passed before modifications should pass after modifications. Hence think carefully when applying code modifcations.
+    5. Think Carefully and Generate Main code to cover all cases including hidden or unobvious cases.
+    6. Think about syntax correctness of the coded after delete and insert operations and make sure to maintain correct indentations.
+
+'''
+        
+    )])
+
+prompt_extract_main = ChatPromptTemplate.from_messages([
+    (
+        "system",
+        '''You are an AI assistant specialized in extracting main code block
+        make sure to preserve correct indentations and syntax in code.
+        '''
+    ),
+    (
+        "human",
+        '''
+        ```{main_code}```
+        
         '''
     )
 ])

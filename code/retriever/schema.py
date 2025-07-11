@@ -88,13 +88,16 @@ class FileOperations(BaseModel):
         ..., 
         description="List of (line_number, content) tuples for lines to insert (can contain \n for multiple lines)"
     )
-    main_code: str = Field(
-        ..., 
-        description= "A main code block to be appended at the end of the file, serving as a test to verify that the issue has been resolved"
-    )
     reasoning: str = Field(
         ..., 
         description="Explanation of the changes made"
+    )
+
+class MainCode(BaseModel):
+    
+    main_code: str = Field(
+        ..., 
+        description= "A main code block to be appended at the end of the file, serving as a test to verify that the issue has been resolved"
     )
 
 class CodeWindow(BaseModel):
@@ -121,11 +124,18 @@ class ResolutionFeedback(BaseModel):
     Schema passed to the tool that decides what to do next
     and records what was learned from the latest step.
     """
-    next_step: NextStep = Field(
-        ...,
-        description="Set to 'end' if it is confident that the issue is fully resolved, otherwise 'continue'.",
-    )
     learning_experience: str = Field(
         ...,
         description="learning experience got from the previous step."
     )
+    
+class NextStepFeedback(BaseModel):
+    """
+    Schema passed to the tool that decides what to do next
+    and records what was learned from the latest step.
+    """
+    next_step: NextStep = Field(
+        ...,
+        description="Set to 'end' if it is confident that the issue is fully resolved, otherwise 'continue'.",
+    )
+    
