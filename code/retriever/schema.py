@@ -75,18 +75,18 @@ class Deletion(BaseModel):
     end: int = Field(..., description="End line (1-indexed) to end delete")
 
 class Insertion(BaseModel):
-    line_num: int = Field(..., description="Line number to insert")
-    content: str = Field(..., description="Code to insert (can contain \n for multiple lines)")
+    line_num: int = Field(..., description="Start of the Line number that denote begining of new code")
+    content: str = Field(..., description="New Code to insert (can contain \n for multiple lines)")
 
 class FileOperations(BaseModel):
     """Complete set of file operations to perform"""
     deleted: List[Deletion] = Field(
         ..., 
-        description="List of (start, end) tuples lines to delete lines of code to fix the issue"
+        description="List of (start, end) which denotes  start and end of line numbers (inclusive) to fix the issue"
     )
     inserted: List[Insertion] = Field(
         ..., 
-        description="List of (line_number, content) tuples for lines to insert (can contain \n for multiple lines)"
+        description="List of (line_number, content) tuples for lines to insert (can contain \n for multiple lines. here line_number mean the start line number for the isnerted code."
     )
     reasoning: str = Field(
         ..., 

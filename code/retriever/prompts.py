@@ -273,8 +273,28 @@ prompt_extract_reasoning = ChatPromptTemplate.from_messages([
 file_edit_template = ChatPromptTemplate.from_messages([
     (
         "system",
-        ''' You are an expert Software Engineer Specialized in solving github issues. Given a skeleton code file, issue description and a hint, instructions  
-        you need to generate the file operations (deletions, insertions)  required to fix the issue.'''
+        ''' You are an expert Software Engineer Specialized in solving github issues. Given a skeleton code file, issue description and a hint, execution output 
+        you need to generate the file operations (deletions, insertions)  required to fix the issue. It is essential to maintain correct indentations and syntatical 
+        correctness after modifications. you cant leave emplty block according to python rule think carefully to assure coorect syntax and proper Indentations.
+
+    1. Analyze the skeleton code and the issue description, hint and instructions
+    2. Determine which lines need to be deleted  to solve the issue
+    3. Determine what new lines need to be inserted and where to solve the issue
+    4. Note that you need to include only newly added code lines. no line of code will be deleted in indertion operation instead newly added code move to the given line and 
+    existing code shifted down.
+    newly Inseted Code Should works for all possible inputs and need to handle errors as well.FOllow the same error handlings as in the orogonal code. Hence think carefully when applying code modifcations.
+    
+    5. Note that you can insert or delete multiple blocks of lines as necessary to solve the issue.
+
+    ===========================
+    Make Sure to add CORRECT INDENTATIONS . 
+    If you would like to add the line '        print(x)', you must fully write that out, with all those spaces before the code!
+    Make Spacing for indentation from the END OF LINE NUMBER. Line numbers are hypothetical and not part of the code.
+    Make sure that code changes should be syntactically correct after modifacations.
+    
+    ========================
+        
+        '''
 
 ),
     (
@@ -291,23 +311,12 @@ file_edit_template = ChatPromptTemplate.from_messages([
     HINT:
     ```{hint}```
     
-    INSTRUCTIONS:
-    ```{instructions}
+    ========================
+    Current output after running:
+    ```{output}
 
-    INSTRUCTIONS:
-    1. Analyze the skeleton code and the issue description, hint and instructions
-    2. Determine which lines need to be deleted  to solve the issue
-    3. Determine what new lines need to be inserted and where to solve the issue
-    4. Provide clear reasoning for your changes
-    5. Note that you can insert or delete multiple blocks of lines as necessary to solve the issue.
-    6. newly Inseted Code Should works for all possible inputs and need to handle errors as well.FOllow the same error handlings as in the orogonal code. Hence think carefully when applying code modifcations.
-    7. Think about syntax correctness of the coded after delete and insert operations and make sure to maintain correct indentations.
+   
 
-
-    EXAMPLE OUTPUT FORMAT:
-    - deleted: [(2, 8), (5, 5)] means delete lines 2-3 and line 5
-    - inserted: [(1, "new line"), (4, "line1\\nline2")] means insert at line 1 and insert two lines at line 4
-    - reasoning: Summaey of what has done by editing
 
 '''
         
@@ -375,7 +384,7 @@ next_step_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         '''You are an expert software engineering mentor. 
-        Your role is to evaluate a developer’s code modification attempt based on the issue, code skeleton, and the execution result.
+        Your role is to evaluate a developer’s code modification attempt based on the issue, and the execution result.
         Your goal is to determine whether the issue has been fully resolved or not.'''
     ),
     (
@@ -384,8 +393,7 @@ next_step_prompt = ChatPromptTemplate.from_messages([
     ISSUE DESCRIPTION:
     ```{issue_description}```
 
-    CODE SKELETON :
-    ```{skeleton_code}```
+
 
     EXECUTION RESULT / OUTPUT:
     ```{execution_output}```
@@ -394,7 +402,8 @@ next_step_prompt = ChatPromptTemplate.from_messages([
     1. Analyze the output with code skeleton and Issue description
     2. Decide whether the issue is fully and correctly resolved in all expected scenarios.
 
-    Instructions:
+
+   Instructions:
     - If you are confident the issue is completely solved, set `next_step` to `"end"`.
     - If further changes or are needed to resolve the issue for all cases, set `next_step` to `"continue"`.
         '''
@@ -406,14 +415,15 @@ action_analysis_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         '''
-        You are an expert code debugger and problem solver. Your task is to analyze the provided skeleton code, issue description, actions taken, and relevant output to identify what went wrong and suggest the next suitable steps to resolve the issue.
+        You are an expert code debugger and problem solver. Your task is to analyze the provided skeleton code,
+        issue description, actions taken, and relevant output to identify what went wrong and suggest the next suitable steps to resolve the issue.
         '''
     ),
     (
         "human",
         '''
         ### Inputs:
-    1. **Skeleton Code**:
+    1. **Current Skeleton Code**:
     ```
     {skeleton_code}
     ```
@@ -428,10 +438,13 @@ action_analysis_prompt = ChatPromptTemplate.from_messages([
     ### Task:
     - Analyze the skeleton code, issue description, actions taken, and relevant output.
     - Identify the root cause of the issue based on the provided information.
-    - For each action taken, evaluate its effectiveness and explain why it did or did not help resolve the issue.
+    - For each action taken, evaluate its effectiveness and provide suitable instructions to avoid errors.,
     - Provide a clear explanation of what went wrong in the code or process.
     - Suggest the next suitable steps to resolve the issue, including specific code changes or debugging strategies if applicable.
     - Ensure the suggestions are actionable, precise, and tailored to the provided context.
+    
+    =========================
+    If you are seeong same actions again and same output think carrefullt and instruct to avoid those to  model.
             
         '''
     )
@@ -460,7 +473,8 @@ main_code_template = ChatPromptTemplate.from_messages([
         ''' You are an expert Software Engineer Specialized in test cases in if __name__ == '__main__ block. Given a skeleton code file, issue description 
         and a hint.
         you need to generate the test cases that coveres all possible test cases to confirm that issue has fixed. Also add test cases to validate all types of inputs
-        Issue you are solving is a large software system hence it should give valifd answers for all possiblle inputs including NUll or None inputs. Make sure to maintain syntax correctness. 
+        Issue you are solving is a large software system hence it should give valifd answers for all possiblle inputs including NUll or None inputs. 
+        Make sure to maintain syntax correctness. provode print statement where necessary to identify the passed or failing conditions and also neceessary information for model to take action. 
         '''
 
 ),

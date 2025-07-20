@@ -1,0 +1,93 @@
+diff --git a/django/core/validators.py b/django/core/validators.py
+index 72fbe15551..1b427b1754 100644
+--- a/django/core/validators.py
++++ b/django/core/validators.py
+@@ -111,36 +111,65 @@ class URLValidator(RegexValidator):
+         try:
+             super().__call__(value)
+         except ValidationError as e:
+-            # Trivial case failed. Try for possible IDN domain
+-            if value:
+-                try:
+-                    scheme, netloc, path, query, fragment = urlsplit(value)
+-                except ValueError:  # for example, "Invalid IPv6 URL"
+-                    raise ValidationError(self.message, code=self.code, params={'value': value})
+-                try:
+-                    netloc = punycode(netloc)  # IDN -> ACE
+-                except UnicodeError:  # invalid domain part
+-                    raise e
+-                url = urlunsplit((scheme, netloc, path, query, fragment))
+-                super().__call__(url)
+-            else:
++            # If empty, just re-raise
++            if not value:
+                 raise
+-        else:
+-            # Now verify IPv6 in the netloc part
+-            host_match = re.search(r'^\[(.+)\](?::\d{1,5})?$', urlsplit(value).netloc)
+-            if host_match:
+-                potential_ip = host_match[1]
+-                try:
+-                    validate_ipv6_address(potential_ip)
+-                except ValidationError:
+-                    raise ValidationError(self.message, code=self.code, params={'value': value})
+ 
++            # Single guarded parse
++            try:
++                scheme, netloc, path, query, fragment = urlsplit(value)
++            except ValueError:
++                # malformed URL (e.g. bad IPv6) 20 ValidationError
++                raise ValidationError(self.message, code=self.code, params={'value': value})
++
++            # Try IDN 20 ASCII (ACE)
++            try:
++                netloc = punycode(netloc)
++            except UnicodeError:
++                # invalid domain part 20 propagate original message
++                raise e
++
++            # Reconstruct and re-validate
++            url = urlunsplit((scheme, netloc, path, query, fragment))
++        # Now verify IPv6 in the netloc part
++        try:
++            netloc = urlsplit(value).netloc
++        except ValueError:
++            # Malformed URL (e.g. "Invalid IPv6 URL")  always ValidationError
++            raise ValidationError(self.message, code=self.code, params={'value': value})
++        host_match = re.search(r'^\[(.+)\](?::\d{1,5})?$', netloc)
++
++        if host_match:
++            potential_ip = host_match[1]
++            try:
++                validate_ipv6_address(potential_ip)
++            except ValidationError:
++                raise ValidationError(self.message, code=self.code, params={'value': value})
++
++        # The maximum length of a full host name is 253 characters per RFC 1034
++        try:
++            hostname = urlsplit(value).hostname
++        except ValueError:
++            # Malformed URL  always ValidationError
++            raise ValidationError(self.message, code=self.code, params={'value': value})
++        if hostname and len(hostname) > 253:
++            raise ValidationError(self.message, code=self.code, params={'value': value})
++            super().__call__(url)
++        # The maximum length of a full host name is 253 characters per RFC 1034
++        # section 3.1. It's defined to be 255 bytes or less, but this includes
++        # one byte for the length of the name and one byte for the trailing dot
+         # The maximum length of a full host name is 253 characters per RFC 1034
+         # section 3.1. It's defined to be 255 bytes or less, but this includes
+         # one byte for the length of the name and one byte for the trailing dot
+         # that's used to indicate absolute names in DNS.
+-        if len(urlsplit(value).hostname) > 253:
++        try:
++            hostname = urlsplit(value).hostname
++        except ValueError:
++            # malformed URL → always ValidationError
+             raise ValidationError(self.message, code=self.code, params={'value': value})
++        if hostname and len(hostname) > 253:
++            raise ValidationError(self.message, code=self.code, params={'value': value})
++        # that's used to indicate absolute names in DNS.
+ 
+ 
+ integer_validator = RegexValidator(

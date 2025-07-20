@@ -110,18 +110,20 @@ def process_line_operations(lines, deleted, inserted):
   
     operations = [] 
     for start, end in deleted:
-        for i in range(start, end + 1):
-            operations.append({
-                'type': 'delete',
-                'original_start': i,  # Keep original 1-indexed
-                'original_end': i,      # Keep original 1-indexed
-                'start':i - 1,       # 0-indexed for processing
-                'end': i - 1           # 0-indexed for processing
-            })
+        # for i in range(start, end + 1):
+        operations.append({
+            'type': 'delete',
+            'original_start': start,  # Keep original 1-indexed
+            'original_end': end,      # Keep original 1-indexed
+            'start':start - 1,       # 0-indexed for processing
+            'end': end - 1           # 0-indexed for processing
+        })
   
     for line_num, content in inserted:
         content  = content.split("\n")
         content = [con.rstrip() for con in content ]
+        content = [line for line in content if line.strip() != ""]
+
         
         
        
@@ -134,7 +136,7 @@ def process_line_operations(lines, deleted, inserted):
         })
     
     
-    operations.sort(key=lambda x: x.get('original_start'))
+    operations.sort(key=lambda x: (x['original_start'], 0 if x['type'] == 'delete' else 1))
     
     result = lines.copy()
     offset = 0  
@@ -145,11 +147,14 @@ def process_line_operations(lines, deleted, inserted):
             actual_start = op['start'] + offset
             actual_end = op['end'] + offset
     
-            del result[actual_start:actual_end + 1]
+            # del result[actual_start:actual_end + 1]
             # result[actual_start] = ""
             
+            for i in range(actual_start, actual_end + 1):
+                result[i] = "#"+ result[i]
+            
             lines_deleted = (op['end'] - op['start'] + 1)
-            offset -= lines_deleted
+            # offset -= lines_deleted
             
         elif op['type'] == 'insert':
            
@@ -288,3 +293,35 @@ def apply_patch_string(patch_str, repo_path='.'):
         print(result.stderr)
 
     return result.returncode == 0  # Returns True if successful
+
+def replace_line_operations(lines, replaces):
+  
+
+    
+    for op in replaces:
+        
+         
+        if op['type'] == 'delete':
+            actual_start = op['start'] + offset
+            actual_end = op['end'] + offset
+    
+            # del result[actual_start:actual_end + 1]
+            # result[actual_start] = ""
+            
+            for i in range(actual_start, actual_end + 1):
+                result[i] = "#"+ result[i]
+            
+            lines_deleted = (op['end'] - op['start'] + 1)
+            # offset -= lines_deleted
+            
+        elif op['type'] == 'insert':
+           
+            actual_position = op['position'] + offset
+            
+            if isinstance(op['content'], list):
+                for i, line in enumerate(op['content']):
+                    result.insert(actual_position + i, line)
+                offset += len(op['content'])
+            else:
+                result.insert(actual_position, op['content'])
+                offset += 1

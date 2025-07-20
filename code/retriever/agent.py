@@ -62,22 +62,27 @@ class AgentState(TypedDict):
     patch: str
     failed_pass_to_pass: List[str]
     failed_fail_to_pass: List[str]
+    max_step_before_analysic: int
 
 llm_anthropic = ChatAnthropic(
     model="claude-sonnet-4-20250514",
-    # temperature=0,
-    max_tokens= 3000,
+    temperature=0.8,
+    max_tokens= 8500,
     max_retries=2,
-    #  thinking={"type": "enabled", "budget_tokens": 1800},
+    #  thinking={"type": "enabled", "budget_tokens": 1200},
 )
 
 llm_gpt4 = ChatOpenAI(
     model="gpt-4.1",
-    temperature=0,
+    temperature=0.8,
 )
 
 llm_o4 = ChatOpenAI(
     model="o4-mini",
+)
+
+llm_o3 = ChatOpenAI(
+    model="o3",
 )
 
 llm_mini = ChatOpenAI(
@@ -113,31 +118,31 @@ model_extract_main = llm_mini.bind(
 
 file_edit_chain = prompts.file_edit_template | model_edit
 # file_edit_chain = prompts.file_edit_template | llm_anthropic
-# file_edit_extract_chain = prompts.prompt_extract_edit | model_extract_edit
+file_edit_extract_chain = prompts.prompt_extract_edit | model_extract_edit
 
 model_learn = llm_o4.bind(
     functions=[convert_to_openai_function(schema.ResolutionFeedback)],
     function_call="auto",
 )
-model_next_step = llm_o4.bind(
+model_next_step = llm_gpt4.bind(
     functions=[convert_to_openai_function(schema.NextStepFeedback)],
     function_call="auto",
 )
-experience_get_chain = prompts.learn_from_experience_prompt | llm_o4
+experience_get_chain = prompts.learn_from_experience_prompt | llm_mini
 
-analyze_chain = prompts.action_analysis_prompt | llm_o4
+analyze_chain = prompts.action_analysis_prompt | llm_mini
 
 main_chain = prompts.main_code_template | llm_anthropic
 main_extract_chain = prompts.prompt_extract_main | model_extract_main
 next_step_chain = prompts.next_step_prompt | model_next_step
 
 
-candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
-              {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
+# candidates = [{'file': 'django/django/core/validators.py', 'confidence': 95, 'reason': "The stack trace, error message, and Django's architectural pattern of translating low-level parsing exceptions into ValidationErrors all indicate that the bug is in this file. It directly contains the URLValidator logic and currently fails to convert ValueError arising from urllib.parse.urlsplit, violating Django's validation contract. This is confirmed by traceback mentions and the occurrence of the 'Invalid IPv6 URL' message."},
+#               {'file': 'django/django/forms/fields.py', 'confidence': 25, 'reason': "Although this file is in the call stack, its role is to invoke validators and catch ValidationError, not ValueError. Modifying it to address this issue would break separation of concerns and scatter redundant error-handling logic, which opposes Django's architecture. Low confidence, as the underlying root cause is not meant to be fixed here."}, {'file': 'django/django/core/exceptions.py', 'confidence': 0, 'reason': 'This file simply defines the ValidationError class, which works as intended and has no bearing on the conversion of ValueError in validation logic. The issue is not related to the structure or definition of exceptions, and this file does not appear in the traceback.'}]
 class CodeAgent:
-    def __init__(self, index=0, candidates=candidates, max_steps=20):
+    def __init__(self, index=0, candidates="", max_steps=30):
         # self.llm = ChatOpenAI(model=llm_model)
-        self.max_steps_before_analysis =4 
+        self.max_steps_before_analysis =20
         self.max_steps = max_steps
         self.index = index
         self.candidates = candidates
@@ -223,6 +228,8 @@ class CodeAgent:
         main_code = json.loads(main_code.additional_kwargs["function_call"]["arguments"])
         main_code = main_code['main_code']
         add_main_code("testbed/agent/"+file_path, main_code)
+        if window_ans['end_line'] - window_ans['start_line'] < 70:
+            window_ans['end_line'] = window_ans['start_line'] + 70
         
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
@@ -274,48 +281,57 @@ class CodeAgent:
 
     def edit(self, state: AgentState) -> Dict[str, Any]:
         if not state['experience']:
-            exp = "no experience yet"
+            exp = "not available yet"
         else:
             exp = state['experience']
         skeleton = generate_code_skeleton("testbed/agent/"+state['file_path'], start=max(state['start_window']-25, 0), end=state['end_window'] +25)
+        output = self.terminal.run_command("python agent/"+state['file_path'], timeout=5000)
         edit_ans = file_edit_chain.invoke({
         "issue_description": state['issue_description'],
         "skeleton_code": skeleton,
         "hint": state['hint'],
-        "instructions": exp
+        "output": output,
         })
         # edit_ans = file_edit_extract_chain.invoke({
         #     "code_operation": edit_ans
         # })
         edit_ans = json.loads(edit_ans.additional_kwargs["function_call"]["arguments"])
         # edit_ans = edit_ans.content[1]['input']
-        # print(edit_ans)
+        print(edit_ans)
         # inserted =  edit_ans['inserted']
         # deleted = ast.literal_eval(edit_ans['deleted'])
         inserted = []
         for added in edit_ans['inserted']:
             inserted.append((int(added['line_num']), added['content']))
         deleted = []
+        print("befdel")
         for dele in edit_ans['deleted']:
             deleted.append((int(dele['start']), int(dele['end'])))
+        print("befor")
         offset = apply_changes_to_file(
             read_file_path= f"testbed/agent/{state['file_path']}",
             write_file_path="testbed/agent/"+state['file_path'],
             inserted=inserted,
             deleted=deleted,
         )
+        print("aft")
         
         output = self.terminal.run_command("python agent/"+state['file_path'], timeout=5000)
         skeleton = generate_code_skeleton("testbed/agent/"+state['file_path'], start=max(state['start_window']-25, 0), end=state['end_window'] +25+offset)
         
-        exp = experience_get_chain.invoke({
-            "issue_description": state['issue_description'],
-            "skeleton_code": skeleton,
-            "execution_output": output
-        })
+        # exp = experience_get_chain.invoke({
+        #     "issue_description": state['issue_description'],
+        #     "skeleton_code": skeleton,
+        #     "execution_output": output
+        # })
+        # instruct = analyze_chain.invoke({
+        #     "issue_description": state['issue_description'],
+        #     "skeleton_code": skeleton,
+        #     "actions_taken": state["actions"]+[{"action": edit_ans, "output": output}],
+        # })
         next_step = next_step_chain.invoke({
             "issue_description": state['issue_description'],
-            "skeleton_code": skeleton,
+            # "skeleton_code": skeleton,
             "execution_output": output          
         })
         next_step = json.loads(next_step.additional_kwargs["function_call"]["arguments"])
@@ -323,7 +339,7 @@ class CodeAgent:
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
             "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
-            "experience": exp.content,
+        
             "actions": state["actions"]+[{"action": edit_ans, "output": output}],
             "end_window": state['end_window'] + offset,
         })
@@ -337,7 +353,7 @@ class CodeAgent:
             else:
                 next_step = "END"
                 goto = "test"
-        elif updated_state['step_count']>self.max_steps_before_analysis:
+        elif state['max_step_before_analysic']<=1:
             next_step = "ANALYZE"
             goto = "analyze"
         else:
@@ -345,8 +361,9 @@ class CodeAgent:
             goto = "edit"
         return Command(goto=goto, update = {
             "step_count": state["step_count"]+1,  # Increment step_count or initialize to 1
-            "experience": exp.content,
             "actions": state["actions"]+[{"action": edit_ans, "output": output}],
+            # "hint": instruct
+            "max_step_before_analysic": state['max_step_before_analysic']-1,
         })
         # return {
         #     "state": updated_state,
@@ -362,9 +379,11 @@ class CodeAgent:
         })
         updated_state = state.copy()  # Create a copy to avoid mutating the input directly
         updated_state.update({
-            "experience": instruct,
-            "actions": []
+            "hint": instruct,
+            "actions": [],
+            "max_step_before_analysic": 3,
         })
+        # self.max_steps_before_analysis = self.max_steps_before_analysis+2
         return updated_state
     
     def get_next_candidate(self, state: AgentState) -> AgentState:
@@ -374,6 +393,41 @@ class CodeAgent:
             "candiate_count": state['candiate_count'] + 1,
         })
         return updated_state
+    
+    def regression(self, state: AgentState) -> AgentState:
+        fail_to_pass = dataset[self.index]['FAIL_TO_PASS']
+        fail_to_pass = ast.literal_eval(fail_to_pass)
+        pass_to_pass = dataset[self.index]['PASS_TO_PASS']
+        pass_to_pass = ast.literal_eval(pass_to_pass)
+        name = dataset[self.index]['instance_id'].split("__")[0]
+        test_patch = dataset[self.index]['test_patch']
+        remove_main_code("testbed/agent/"+state['file_path'])
+        specs = MAP_REPO_VERSION_TO_SPECS_PY[dataset[self.index]['repo']][dataset[self.index]['version']]
+        
+        # for pas in fail_to_pass:
+        #     te = pas.split("(")
+            
+        #     if len(te) != 2:
+        #         skip_count += 1
+        #         continue
+        #     if not te[1].endswith(")"):
+        #         # print("Skipping malformed test:", pas)
+        #         skip_count += 1
+        #         continue
+            
+        #     res = self.terminal.run_command(f"{specs['test_cmd']} {te[1][:len(te[1])-1].strip()}")
+        #     res = res.strip().split("\n")
+        #     found = False
+        #     for r in res:
+        #         if r.startswith(te[0].strip()):
+        #             if r.split("...")[1].strip().startswith("ok"):
+        #                 print("Test passed:", r)
+        #                 count += 1
+        #                 found= True
+        #                 break
+        #     if not found:
+        #         failed_fail_to_pass.append(pas)
+        
     
     def test(self, state: AgentState) -> AgentState:
         fail_to_pass = dataset[self.index]['FAIL_TO_PASS']
@@ -465,7 +519,7 @@ class CodeAgent:
         print("🚀 Starting React Code Agent...")
         self.index = index
         
-        if not candidates:
+        if candidates:
             self.candidates = candidates
         issue_description = dataset[self.index]["problem_statement"]
         
@@ -482,12 +536,13 @@ class CodeAgent:
             "actions": [],
             "patch":"",
             "failed_pass_to_pass": [],
-            "failed_fail_to_pass": []
+            "failed_fail_to_pass": [],
+            "max_step_before_analysic": 3
         
         }
         
         # Run the graph
-        config = {"configurable": {"thread_id": "react-agent-session"}}
+        config = {"configurable": {"thread_id": "react-agent-session"}, "recursion_limit": 35}
         
         try:
             final_state = None

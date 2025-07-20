@@ -1,0 +1,37 @@
+diff --git a/django/forms/models.py b/django/forms/models.py
+index 5dcf923c12..5b9b4cf187 100644
+--- a/django/forms/models.py
++++ b/django/forms/models.py
+@@ -1162,16 +1162,28 @@ class ModelChoiceIteratorValue:
+     def __init__(self, value, instance):
+         self.value = value
+         self.instance = instance
+-
+     def __str__(self):
+         return str(self.value)
+-
+     def __eq__(self, other):
+         if isinstance(other, ModelChoiceIteratorValue):
+             other = other.value
+         return self.value == other
+-
+-
++    def __hash__(self):
++        return hash(self.value)
++#class ModelChoiceIteratorValue:
++#    def __init__(self, value, instance):
++#        self.value = value
++#        self.instance = instance
++#
++#    def __str__(self):
++#        return str(self.value)
++#
++#    def __eq__(self, other):
++#        if isinstance(other, ModelChoiceIteratorValue):
++#            other = other.value
++#        return self.value == other
++#
++#
+ class ModelChoiceIterator:
+     def __init__(self, field):
+         self.field = field
